@@ -1,0 +1,1 @@
+Prevent fast forwards so that this branch cannot be accidentally pushed to.
