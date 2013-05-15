@@ -16,6 +16,7 @@ A collection of Lee's environment configuration, scripts and other goodies.
 
 The installation script performs the following actions:
 
+1. Sets the shell to `/bin/zsh`.
 1. Adds a line to `~/.zshrc` to source `Profile/zshrc`.
 1. Configures Git to include the configuration file at `config/git`.
 1. If it is being executed on OS X:
