@@ -36,11 +36,19 @@ task :git => [:homebrew, :git_install] do
 end
 
 task :git_install do
-  sh 'brew install git'
+  unless File.exists? '/usr/local/bin/git'
+    if os_name == :os_x
+      sh 'brew install git'
+    else
+      sh 'apt-get install --assume-yes git'
+    end
+  end
 end
 
 task :homebrew do
-  sh 'ruby -e "$(curl -fsSL https://raw.github.com/mxcl/homebrew/go)"'
+  unless File.exists? '/usr/local/bin/brew' || os_name != :os_x
+    sh 'ruby -e "$(curl -fsSL https://raw.github.com/mxcl/homebrew/go)"'
+  end
 end
 
 task :zsh do
