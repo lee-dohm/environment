@@ -5,7 +5,7 @@ A collection of Lee's environment configuration, scripts and other goodies.
 
 ## Installation
 
-[Ruby][ruby] and [Rake][rake] are required to be installed before this installation will work.
+[Ruby][ruby] (v1.9+) and [Rake][rake] are required to be installed before this installation will work.
 
 1. Check out the repository.
 1. Open a shell window.
