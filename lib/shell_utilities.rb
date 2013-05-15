@@ -25,8 +25,11 @@ module ShellUtilities
 
   # Executes the given shell command.
   #
-  # @param [String] cmd Command to be executed in the shell.
-  # @return Exit code of the command.
+  # Prints the command to `$stdout` first. Returns `true` if the command gives a zero exit status, `false` for non-zero exit status.
+  # Returns `nil` if the command execution fails.
+  #
+  # @param [String] cmd Command to be executed.
+  # @return (true, false, nil)
   def sh(cmd)
     puts cmd
     system cmd
