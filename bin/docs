@@ -70,10 +70,6 @@ end
 
 opts = parse_arguments
 
-if opts[:official]
-  return_code = open_official
-else
-  return_code = open_local(opts)
-end
+return_code = opts[:official] ? open_official : open_local(opts)
 
 exit return_code
