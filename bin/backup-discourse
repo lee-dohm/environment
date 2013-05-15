@@ -1,5 +1,9 @@
 #!/usr/bin/env ruby
 
+#
+# Copyright (c) 2013 by Lifted Studios. All Rights Reserved.
+#
+
 # Planned functionality:
 #
 # 1. Create a temporary directory

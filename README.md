@@ -25,7 +25,7 @@ The installation script performs the following actions:
 
 `lib/trollop.rb` is Copyright &copy; 2008-2012 William Morgan. Trollop is distributed under the same terms as Ruby. For more information see [the Trollop homepage][trollop].
 
-All else is Copyright &copy; 2013 [Lee Dohm][lee], [Lifted Studios][lifted].  See [LICENSE](LICENSE.md) for details.
+All else is Copyright &copy; 2011-2013 [Lee Dohm][lee], [Lifted Studios][lifted].  See [LICENSE](LICENSE.md) for details.
 
 [lee]: https://github.com/lee-dohm
 [lifted]: https://github.com/lifted-studios
