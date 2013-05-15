@@ -16,9 +16,9 @@ end
 task :default => :yard
 
 desc 'Install the standard environment'
-task :install => [:zsh, :zshrc, :git]
+task :install => [:zsh, :git]
 
-task :git do
+task :git => [:homebrew, :git_install] do
   root = Dir.pwd
 
   include_path = File.join(root, 'config', 'git')
@@ -35,11 +35,17 @@ task :git do
   end
 end
 
-task :zsh do
-  sh "chsh -s /bin/zsh"
+task :git_install do
+  sh 'brew install git'
 end
 
-task :zshrc do
+task :homebrew do
+  sh 'ruby -e "$(curl -fsSL https://raw.github.com/mxcl/homebrew/go)"'
+end
+
+task :zsh do
+  sh "chsh -s /bin/zsh"
+
   home = File.expand_path('~')
   zshrc = File.join(Dir.pwd, 'Profile', 'zshrc')
 
