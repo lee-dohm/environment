@@ -31,11 +31,6 @@
     whitespace = red reverse
 
 [alias]
-    branch-tree = log --graph --decorate --pretty=oneline --abbrev-commit --branches origin/master~3..
     ci = commit
-    co = checkout
-    lol = log --graph --decorate --pretty=oneline --abbrev-commit
     lola = log --graph --decorate --pretty=oneline --abbrev-commit --all
     st = status
-    ts = status
-
