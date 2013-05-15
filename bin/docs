@@ -1,0 +1,79 @@
+#!/usr/bin/env ruby -w
+
+#
+# Copyright (c) 2013 by Lifted Studios.  All Rights Reserved.
+#
+
+lib = File.expand_path('../../lib', __FILE__)
+$LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
+
+require 'fileutils'
+require 'shell_utilities'
+require 'trollop'
+
+include ShellUtilities
+
+# Opens the locally-generated documentation.
+#
+# @param [Hash] opts Options passed on the command line.
+# @return [Fixnum] Command line return code.
+def open_local(opts)
+  dir = climb { |d| File.exists?(File.join(d, 'doc/index.html')) }
+
+  unless dir
+    puts "No documentation found"
+    return 1
+  end
+
+  if opts[:private]
+    FileUtils::cd dir do
+      sh 'yardoc --private'
+    end
+  end
+
+  sh "open #{File.join(dir, 'doc/index.html')}"
+
+  0
+end
+
+# Opens the official documentation at `rubydoc.info`.
+#
+# @return [Fixnum] Command line return code.
+def open_official
+  dir = climb { |d| File.exists?(File.join(d, '.git')) }
+
+  unless dir
+    puts "No git repository found"
+    return 1
+  end
+
+  origin = `git remote -v`.split($/).grep(/^origin/).first
+  match = /([^\/:]*\/[^.]*)\.git/.match(origin)
+  unless match
+    puts "Could not find Github repo name"
+    return 1
+  end
+
+  repo = match[1]
+  sh "open http://rubydoc.info/github/#{repo}"
+
+  0
+end
+
+# Parses the arguments passed on the command line.
+def parse_arguments
+  Trollop::options do
+    opt :official, 'Open the official documentation at rubydoc.info'
+    opt :private, 'Regenerate documentation including private methods'
+  end
+end
+
+opts = parse_arguments
+
+if opts[:official]
+  return_code = open_official
+else
+  return_code = open_local(opts)
+end
+
+exit return_code

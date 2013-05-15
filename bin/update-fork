@@ -1,0 +1,78 @@
+#!/usr/bin/env ruby
+
+#
+# Copyright (c) 2013 by Lifted Studios.  All Rights Reserved.
+#
+
+lib = File.expand_path('../../lib', __FILE__)
+$LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
+
+require 'fileutils'
+require 'shell_utilities'
+require 'trollop'
+
+include ShellUtilities
+
+# This script is intended to update Github forks of open source projects.  It is a two-step process which consists of pulling
+# the latest changes from the official repository and pushing the changes to one's personal fork on Github.  This is accomplished
+# by some variant of the following two commands:
+#
+# ```bash
+# $ git pull official master
+# $ git push
+# ```
+#
+# The remote name of `official` in the first command is the standard that we use to denote a pointer to the project's official
+# repository.  This should be configurable or overrideable in this script.
+#
+# There are three ways that this script can update a fork or forks.  They will be checked in the following order:
+#
+# 1. The script is launched in the root directory of a repository, i.e. in the current working directory there is a `.git`
+#    directory.
+# 1. The script is launched in a subdirectory of the root directory of a repository, i.e. there is a `.git` directory in a parent
+#    directory of the current working directory.
+# 1. The script is launched in a directory under which are a number of repositories, i.e. there are direct child directories that
+#    have `.git` directories in them.
+
+# Represents an error in working with Git.
+class GitError < StandardError
+end
+
+# Executes the given git command and raises an error if it fails.
+#
+# @param command Command to execute.
+def execute_git_command(command)
+  raise GitError, "Problem executing the command: git #{command}" if !(system("git #{command}"))
+end
+
+# Determines if the Git repository at the given path has a remote with the given name.
+#
+# @param path Path to the root of the Git repository.
+# @param remote_name Name of the expected remote.
+# @return Flag indicating whether the given Git repository has a remote with the given name.
+def has_remote?(path, remote_name = 'official')
+  FileUtils.cd path do
+    return `git remote`.split(/#{$/}/).any? { |remote| remote == remote_name }
+  end
+end
+
+# Updates the repo at the given path.
+#
+# @param path Path to the repository to update.
+def update_repo(path, remote_name = 'official')
+  if has_remote?(path, remote_name)
+    FileUtils.cd path do
+      execute_git_command "pull #{remote_name} master"
+      execute_git_command 'push'
+    end
+  end
+end
+
+dir = climb { |d| Dir.exists?(File.join(d, '.git')) }
+
+unless dir
+  puts 'Could not find a git respository'
+  exit(1)
+end
+
+update_repo dir

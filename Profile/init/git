@@ -1,0 +1,19 @@
+#!/bin/zsh
+
+if [[ -e /usr/local/bin/git ]] then
+    alias git="/usr/local/bin/git"
+fi
+
+# Determine if config file is already included
+for p in `git config --global --get include.path`; do eval p=$p; echo $p; done | grep $SCRIPT_DIR &>/dev/null
+if [[ $? -ne 0 ]] then
+    git config --global --add include.path "$SCRIPT_DIR/config/git"
+fi
+
+# Determine if ignore file is already included
+if [[ $OS -eq "Darwin" ]] then
+    for p in `git config --global --get core.excludesfile`; do eval p=$p; echo $p; done | grep $SCRIPT_DIR &>/dev/null
+    if [[ $? -ne 0 ]] then
+        git config --global --add core.excludesfile "$SCRIPT_DIR/config/gitignore_osx"
+    fi
+fi

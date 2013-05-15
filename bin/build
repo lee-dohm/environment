@@ -1,0 +1,31 @@
+#!/usr/bin/env ruby -w
+
+#
+# Copyright (c) 2013 by Lifted Studios.  All Rights Reserved.
+#
+
+lib = File.expand_path('../../lib', __FILE__)
+$LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
+
+require 'fileutils'
+require 'shell_utilities'
+
+include FileUtils
+include ShellUtilities
+
+dir = climb { |d| File.exists?(File.join(d, 'Rakefile')) }
+
+if dir.nil?
+  puts 'No build system detected'
+  exit 1
+end
+
+command = ['rake', ARGV].flatten.join(' ')
+command = "bundle exec #{command}" if File.exists?(File.join(dir, 'Gemfile'))
+
+retcode = 0
+cd(dir) do
+  retcode = sh command
+end
+
+exit retcode

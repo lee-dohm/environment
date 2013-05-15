@@ -1,0 +1,107 @@
+#!/usr/bin/env ruby
+
+require 'net/http'
+require 'uri'
+require 'open-uri'
+require 'optparse'
+require 'ostruct'
+
+STYLES = ['modern-blue', 'napkin']
+FORMATS = ['png', 'svg', 'pdf']
+
+def download_file(text, options)
+  response = Net::HTTP.post_form(URI.parse('http://www.websequencediagrams.com/index.php'),
+                                 'style' => options.style,
+                                 'format' => options.format,
+                                 'message' => text)
+
+  if response.body =~ /img: "([^"]+)"/
+    query = $1
+    query.match(/\?([^=]+)=(.+)$/)
+    ext = options.format
+    name = options.name || $2
+    url = "http://www.websequencediagrams.com/#{query}"
+    file = "#{name}.#{ext}"
+
+    $stderr.puts "Opening #{url}"
+
+    File.open(file, "w+") { |f| f << open(url).read }
+
+    return file
+  end
+
+  return nil
+end
+
+def open_file(file)
+  case RUBY_PLATFORM
+  when /linux/i
+    $stderr.puts "Running gnome-open file:///#{Dir.getwd}/#{file}"
+    system("gnome-open file://#{Dir.getwd}/#{file}")
+  else
+    system("open #{file}")
+  end
+end
+
+def parse_options(args)
+  options = OpenStruct.new
+  parser = OptionParser.new do |p|
+    p.banner = "Usage: #{p.program_name} [options] [file or url]"
+
+    p.separator ""
+    p.separator "Specific options:"
+
+    format_list = FORMATS.join(', ')
+    p.on("-f", "--format FORMAT", FORMATS, "Set the image format (#{format_list})") do |format|
+      options.format = format
+    end
+
+    p.on("-n", "--name NAME", "Base file name") do |name|
+      options.name = name
+    end
+
+    p.on("-o", "--[no-]open", "Open the downloaded file") do |open|
+      options.open = open
+    end
+
+    style_list = STYLES.join(', ')
+    p.on("-s", "--style STYLE", STYLES, "Set the style to use (#{style_list})") do |style|
+      options.style = style
+    end
+
+    p.separator ""
+    p.separator "Common options:"
+
+    p.on_tail("-h", "--help", "Show this message") do
+      puts p
+      exit
+    end
+  end
+  parser.parse!(args)
+
+  options.format ||= 'svg'
+  options.open   ||= (options.format == 'svg' ? false : true)
+  options.style  ||= 'modern-blue'
+
+  options
+end
+
+def read_sequence(arg)
+  if arg && $stdout.tty?
+    if File.exist?(arg)
+      text = File.read(arg)
+    else
+      text = open(arg, 'Accept' => 'text/plain').read
+    end
+  else
+    text = readlines.join
+  end
+
+  text
+end
+
+args = ARGV
+options = parse_options(args)
+text = read_sequence(args[0])
+filename = download_file(text, options)
+open_file(filename) if options.open && !filename.nil?

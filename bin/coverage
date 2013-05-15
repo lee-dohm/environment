@@ -1,0 +1,23 @@
+#!/usr/bin/env ruby -w
+
+#
+# Copyright (c) 2013 by Lifted Studios.  All Rights Reserved.
+#
+
+lib = File.expand_path('../../lib', __FILE__)
+$LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
+
+require 'shell_utilities'
+
+include ShellUtilities
+
+dir = climb { |d| File.exists?(File.join(d, 'coverage/index.html')) }
+
+if dir
+  sh "open #{File.join(dir, 'coverage/index.html')}"
+else
+  puts "No coverage report found"
+  exit 1
+end
+
+exit 0

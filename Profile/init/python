@@ -1,0 +1,5 @@
+#!/bin/zsh
+
+if [[ $OS == 'Darwin' ]] then
+    export PATH="$PATH:/usr/local/share/python3"
+fi

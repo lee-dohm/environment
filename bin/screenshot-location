@@ -1,0 +1,31 @@
+#!/usr/bin/env ruby -w
+
+#
+# Copyright (c) 2013 by Lifted Studios.  All Rights Reserved.
+#
+
+# Changes the default location for storing screenshots using the OS X keyboard commands.
+#
+# From: http://osxdaily.com/2011/01/26/change-the-screenshot-save-file-location-in-mac-os-x/
+
+lib = File.expand_path('../../lib', __FILE__)
+$LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
+
+require 'shell_utilities'
+require 'trollop'
+
+include ShellUtilities
+
+opts = Trollop::options do
+  opt :default, 'Set the screenshot location to the default of ~/Desktop'
+end
+
+unless opts[:default] || ARGV.count == 1
+  puts 'Must specify either a single location or the --default option'
+  exit(1)
+end
+
+location = ARGV[0] || File.expand_path('~/Desktop')
+
+sh "defaults write com.apple.screencapture location #{location}/"
+sh 'killall SystemUIServer'

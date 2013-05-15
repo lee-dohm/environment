@@ -1,0 +1,27 @@
+#!/usr/bin/env ruby -w
+
+#
+# Copyright (c) 2011-2013 by Lifted Studios.  All Rights Reserved.
+#
+
+#
+# Generates a new GUID and writes it to standard out.
+#
+
+lib = File.expand_path('../../lib', __FILE__)
+$LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
+
+require 'trollop'
+require 'uuidtools'
+
+opts = Trollop::options do
+  opt :compact, "Output a compact format ID"
+end
+
+uuid = UUIDTools::UUID.random_create.to_s
+
+if (opts[:compact]) then
+  uuid.gsub!(/-/, '')
+end
+
+puts uuid

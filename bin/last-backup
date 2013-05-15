@@ -1,0 +1,8 @@
+#!/usr/bin/env ruby
+
+require 'pathname'
+
+sentinel = Pathname.new(ENV['HOME']) + '.last_successful_backup'
+if sentinel.exist? then
+  puts 'Last backup: ' + sentinel.mtime.strftime('%a %b %d %I:%M %p')
+end
