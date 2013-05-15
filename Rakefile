@@ -7,8 +7,8 @@ require 'yard'
 # @return [Symbol] OS identifier.
 def os_name
   case `uname -s`
-  when 'Darwin' then :os_x
-  when 'Linux' then :linux
+  when /Darwin/ then :os_x
+  when /Linux/ then :linux
   else :unknown
   end
 end
@@ -37,9 +37,10 @@ end
 
 task :git_install do
   unless File.exists? '/usr/local/bin/git'
-    if os_name == :os_x
+    case os_name
+    when :os_x
       sh 'brew install git'
-    else
+    when :linux
       sh 'apt-get install --assume-yes git'
     end
   end
@@ -49,6 +50,11 @@ task :homebrew do
   unless File.exists? '/usr/local/bin/brew' || os_name != :os_x
     sh 'ruby -e "$(curl -fsSL https://raw.github.com/mxcl/homebrew/go)"'
   end
+end
+
+desc 'Print out the detected OS'
+task :os do
+  puts os_name
 end
 
 task :zsh do
