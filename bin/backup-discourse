@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 
 # Planned functionality:
-# 
+#
 # 1. Create a temporary directory
 # 2. Back up the database
 # 3. Back up the uploads directory
@@ -18,7 +18,7 @@ require 'time'
 require 'tmpdir'
 
 # Back up the Discourse database.
-# 
+#
 # @param dir Directory to which to back up the database.
 def backup_database(dir)
   $log.info "Start database backup"
@@ -42,7 +42,7 @@ def backup_file
 end
 
 # Backs up the uploads directory.
-# 
+#
 # @param dir Directory to which to back up the uploads.
 def backup_uploads(dir)
   $log.info "Start uploads backup"
@@ -56,7 +56,7 @@ def backup_uploads(dir)
 end
 
 # Configures the logging object according to the supplied options object.
-# 
+#
 # @param [OpenStruct] options Options gathered from the command line.
 # @return [Logger] Initialized logging object.
 def configure_logging(options)
@@ -72,7 +72,7 @@ def configure_logging(options)
 end
 
 # Create an archive out of the temp backup directory.
-# 
+#
 # @param dir Directory in which the temp backup exists.
 def create_archive(dir)
   file = backup_file
@@ -85,7 +85,7 @@ def create_archive(dir)
 end
 
 # Parses the command line options.
-# 
+#
 # @param args Array of command-line arguments.
 # @return [OpenStruct] Options for the execution of the program.
 def parse_options(args)
