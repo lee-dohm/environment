@@ -5,12 +5,21 @@ A collection of Lee's environment configuration, scripts and other goodies.
 
 ## Installation
 
-[Ruby][ruby] (v1.9+) and [Rake][rake] are required to be installed before this installation will work.
+[Ruby][ruby] (v1.9+) and [Rake][rake] are required to be installed before the installation script will work.
 
 1. Check out the repository.
 1. Open a shell window.
 1. Change to the directory where the repository is installed.
 1. Execute the command: `rake install`
+
+### Actions
+
+The installation script performs the following actions:
+
+1. Adds a line to `~/.zshrc` to source `Profile/zshrc`.
+1. Configures Git to include the configuration file at `config/git`.
+1. If it is being executed on OS X:
+    1. Configures Git to use `config/gitignore_osx` as its global ignores file.
 
 ## Copyright
 
