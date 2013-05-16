@@ -47,7 +47,7 @@ task :git_install do
 end
 
 task :homebrew do
-  unless File.exists? '/usr/local/bin/brew' || os_name != :os_x
+  if os_name == :os_x && !(File.exists? '/usr/local/bin/brew')
     sh 'ruby -e "$(curl -fsSL https://raw.github.com/mxcl/homebrew/go)"'
   end
 end
