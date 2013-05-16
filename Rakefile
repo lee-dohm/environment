@@ -58,7 +58,9 @@ task :os do
 end
 
 task :zsh do
-  sh "chsh -s /bin/zsh"
+  if ENV['SHELL'] != '/bin/zsh'
+    sh "chsh -s /bin/zsh"
+  end
 
   home = File.expand_path('~')
   zshrc = File.join(Dir.pwd, 'Profile', 'zshrc')
