@@ -24,8 +24,5 @@ command = ['rake', ARGV].flatten.join(' ')
 command = "bundle exec #{command}" if File.exists?(File.join(dir, 'Gemfile'))
 
 retcode = 0
-cd(dir) do
-  retcode = sh command
-end
-
+cd(dir) { retcode = sh command }
 exit retcode
