@@ -2,7 +2,16 @@
 # Copyright (c) 2013 by Lifted Studios. All Rights Reserved.
 #
 
+require 'English'
 require 'yard'
+
+# Retrieves all global values of the given `key`.
+#
+# @param [String] key Configuration key for which to retrieve values.
+# @return [Array<String>] List of values for the given `key`.
+def git_config_get(key)
+  `git config --global --get #{key}`.split($RS)
+end
 
 # @return [Symbol] OS identifier.
 def os_name
@@ -22,7 +31,7 @@ task :git => [:homebrew, :git_install] do
   root = Dir.pwd
 
   include_path = File.join(root, 'config', 'git')
-  if `git config --global --get include.path`.split($/).grep(/^#{include_path}/).nil?
+  if !(git_config_get('include.path').any? { |path| path =~ /^#{include_path}/ })
     sh "git config --global --add include.path '#{include_path}'"
   end
 
@@ -30,7 +39,7 @@ task :git => [:homebrew, :git_install] do
     excludes_path = File.join(root, 'config', 'gitignore_osx')
   end
 
-  if excludes_path && `git config --global --get core.excludesfile`.split($/).grep(/^#{excludes_path}/).nil?
+  if excludes_path && !(git_config_get('core.excludesfile').any? { |path| path =~ /^#{excludes_path}/ })
     sh "git config --global --add core.excludesfile '#{excludes_path}'"
   end
 end
