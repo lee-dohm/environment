@@ -8,8 +8,8 @@ module ShellUtilities
   # supplied block returns `true`.
   #
   # @param [String] dir Directory within which to start the search.
-  # @return [String] Matching directory.
-  # @return [nil] If no directory is found which matches.
+  # @return [String] if a matching directory is found.
+  # @return [nil] if no directory is found which matches.
   # @yieldparam dir [String] Directory to test.
   # @yieldreturn [Boolean] `true` if the directory passed the test; `false` otherwise.
   def climb(dir = Dir.pwd)
@@ -25,11 +25,12 @@ module ShellUtilities
 
   # Executes the given shell command.
   #
-  # Prints the command to `$stdout` first. Returns `true` if the command gives a zero exit status, `false` for non-zero exit status.
-  # Returns `nil` if the command execution fails.
+  # Prints the command to `$stdout` first.
   #
   # @param [String] cmd Command to be executed.
-  # @return (true, false, nil)
+  # @return [true] if the command gives a zero exit status.
+  # @return [false] if the command gives a non-zero exit status.
+  # @return [nil] if executing the command fails.
   def sh(cmd)
     puts cmd
     system cmd
