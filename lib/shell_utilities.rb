@@ -11,7 +11,7 @@ module ShellUtilities
   # @return [String] if a matching directory is found.
   # @return [nil] if no directory is found which matches.
   # @yieldparam dir [String] Directory to test.
-  # @yieldreturn [Boolean] `true` if the directory passed the test; `false` otherwise.
+  # @yieldreturn [Boolean] Flag indicating if the directory passed the test.
   def climb(dir = Dir.pwd)
     dir = File.expand_path('.', dir)
 
@@ -25,14 +25,11 @@ module ShellUtilities
 
   # Executes the given shell command.
   #
-  # Prints the command to `$stdout` first.
-  #
   # @param [String] cmd Command to be executed.
-  # @return [true] if the command gives a zero exit status.
-  # @return [false] if the command gives a non-zero exit status.
-  # @return [nil] if executing the command fails.
-  def sh(cmd)
-    puts cmd
+  # @param [Boolean] verbose Flag indicating whether to print the command to `$stdout` before executing.
+  # @return [Boolean] Flag indicating success or failure of the command.
+  def sh(cmd, verbose = true)
+    puts cmd if verbose
     system cmd
   end
 end
