@@ -20,6 +20,7 @@ alias bug='nocorrect bug'
 alias build='nocorrect build'
 alias guard='nocorrect guard'
 alias hg='nocorrect hg'
+alias tree='nocorrect tree'
 alias tt='nocorrect tt'
 
 # colors

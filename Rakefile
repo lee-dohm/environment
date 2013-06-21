@@ -25,7 +25,10 @@ end
 task :default => :yard
 
 desc 'Install the standard environment'
-task :install => [:zsh, :git]
+task :install => [:zsh]
+
+desc 'Install the standard tools'
+task :tools => [:git]
 
 task :git => [:homebrew, :git_install] do
   root = Dir.pwd
