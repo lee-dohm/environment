@@ -1,5 +1,0 @@
-#!/bin/zsh
-
-if [[ -e /usr/local/bin/git ]] then
-    alias git="/usr/local/bin/git"
-fi
