@@ -25,12 +25,12 @@ end
 task :default => :yard
 
 desc 'Install the standard environment'
-task :install => [:zsh]
+task :install => [:zsh, :tools]
 
 desc 'Install the standard tools'
-task :tools => [:git]
+task :tools => [:package_manager, :git]
 
-task :git => [:homebrew, :git_install] do
+task :git => [:git_install] do
   root = Dir.pwd
 
   include_path = File.join(root, 'config', 'git')
@@ -58,7 +58,7 @@ task :git_install do
   end
 end
 
-task :homebrew do
+task :package_manager do
   if os_name == :os_x && !(File.exists? '/usr/local/bin/brew')
     sh 'ruby -e "$(curl -fsSL https://raw.github.com/mxcl/homebrew/go)"'
   end
