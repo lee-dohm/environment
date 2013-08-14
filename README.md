@@ -5,7 +5,13 @@ A collection of Lee's environment configuration, scripts and other goodies.
 
 ## Installation
 
-[Ruby][ruby] (v1.9+) and [Rake][rake] are required to be installed before the installation script will work, which means most likely that you'll need to install [RVM][rvm] first.
+### Install Ruby Environment
+
+1. Install [RVM][rvm]
+1. Install [Ruby][ruby] (v1.9+)
+1. Install [Rake][rake]
+
+### Install Environment
 
 1. Check out the repository.
 1. Open a shell window.
