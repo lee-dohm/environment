@@ -1,0 +1,36 @@
+#!/usr/bin/env ruby -w
+
+#
+# Copyright (c) 2013 by Lifted Studios. All Rights Reserved.
+#
+
+# Updates the /etc/paths file to either place the `/usr/local/bin` entry before
+# `/usr/bin` or last in the file. Homebrew works best if `/usr/local/bin` is
+# before `/usr/bin`, but `/usr/local/bin` being last is the default on OS X.
+
+lib = File.expand_path('../../lib', __FILE__)
+$LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
+
+require 'trollop'
+
+paths_file = '/etc/paths'
+usr_bin = '/usr/bin'
+local_bin = '/usr/local/bin'
+
+opts = Trollop::options do
+  opt :default, 'Set /usr/local/bin to be last in the PATH order'
+  opt :brew, 'Set /usr/local/bin to be before /usr/bin in the PATH order'
+end
+
+Trollop::die 'Must select either --default or --brew' unless opts[:default] || opts[:brew]
+
+entries = IO.readlines(paths_file)
+entries = entries.reject { |entry| entry == local_bin }
+
+if opts[:default]
+  entries << local_bin
+else
+  entries.insert(entries.find_index(usr_bin), local_bin)
+end
+
+File.open(paths_file, 'w') { |file| file.puts entries }
