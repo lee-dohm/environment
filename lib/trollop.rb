@@ -7,67 +7,69 @@ require 'date'
 
 module Trollop
 
+# Version of the Trollop library.
 VERSION = "2.0"
 
-## Thrown by Parser in the event of a commandline error. Not needed if
-## you're using the Trollop::options entry.
+# Thrown by Parser in the event of a commandline error. Not needed if
+# you're using the `Trollop::options` entry.
 class CommandlineError < StandardError; end
 
-## Thrown by Parser if the user passes in '-h' or '--help'. Handled
-## automatically by Trollop#options.
+# Thrown by Parser if the user passes in `-h` or `--help`. Handled
+# automatically by `Trollop#options`.
 class HelpNeeded < StandardError; end
 
-## Thrown by Parser if the user passes in '-h' or '--version'. Handled
-## automatically by Trollop#options.
+# Thrown by Parser if the user passes in `-h` or `--version`. Handled
+# automatically by `Trollop#options`.
 class VersionNeeded < StandardError; end
 
-## Regex for floating point numbers
+# Regex for floating point numbers
 FLOAT_RE = /^-?((\d+(\.\d+)?)|(\.\d+))([eE][-+]?[\d]+)?$/
 
-## Regex for parameters
+# Regex for parameters
 PARAM_RE = /^-(-|\.$|[^\d\.])/
 
-## The commandline parser. In typical usage, the methods in this class
-## will be handled internally by Trollop::options. In this case, only the
-## #opt, #banner and #version, #depends, and #conflicts methods will
-## typically be called.
-##
-## If you want to instantiate this class yourself (for more complicated
-## argument-parsing logic), call #parse to actually produce the output hash,
-## and consider calling it from within
-## Trollop::with_standard_exception_handling.
+# The commandline parser. In typical usage, the methods in this class
+# will be handled internally by `Trollop::options`. In this case, only the
+# `#opt`, `#banner` and `#version`, `#depends`, and `#conflicts` methods will
+# typically be called.
+#
+# If you want to instantiate this class yourself (for more complicated
+# argument-parsing logic), call `#parse` to actually produce the output hash,
+# and consider calling it from within `Trollop::with_standard_exception_handling`.
 class Parser
 
-  ## The set of values that indicate a flag option when passed as the
-  ## +:type+ parameter of #opt.
+  # The set of values that indicate a flag option when passed as the
+  # `:type` parameter of #opt.
   FLAG_TYPES = [:flag, :bool, :boolean]
 
-  ## The set of values that indicate a single-parameter (normal) option when
-  ## passed as the +:type+ parameter of #opt.
-  ##
-  ## A value of +io+ corresponds to a readable IO resource, including
-  ## a filename, URI, or the strings 'stdin' or '-'.
+  # The set of values that indicate a single-parameter (normal) option when
+  # passed as the `:type` parameter of #opt.
+  #
+  # A value of `io` corresponds to a readable IO resource, including
+  # a filename, URI, or the strings 'stdin' or '-'.
   SINGLE_ARG_TYPES = [:int, :integer, :string, :double, :float, :io, :date]
 
-  ## The set of values that indicate a multiple-parameter option (i.e., that
-  ## takes multiple space-separated values on the commandline) when passed as
-  ## the +:type+ parameter of #opt.
+  # The set of values that indicate a multiple-parameter option (i.e., that
+  # takes multiple space-separated values on the commandline) when passed as
+  # the `:type` parameter of #opt.
   MULTI_ARG_TYPES = [:ints, :integers, :strings, :doubles, :floats, :ios, :dates]
 
-  ## The complete set of legal values for the +:type+ parameter of #opt.
+  # The complete set of legal values for the `:type` parameter of `#opt`.
   TYPES = FLAG_TYPES + SINGLE_ARG_TYPES + MULTI_ARG_TYPES
 
-  INVALID_SHORT_ARG_REGEX = /[\d-]/ #:nodoc:
+  INVALID_SHORT_ARG_REGEX = /[\d-]/
 
-  ## The values from the commandline that were not interpreted by #parse.
+  # @return [Array<String>] Values from the commandline that were not interpreted by `#parse`.
   attr_reader :leftovers
 
-  ## The complete configuration hashes for each option. (Mainly useful
-  ## for testing.)
+  # The complete configuration hashes for each option. (Mainly useful
+  # for testing.)
   attr_reader :specs
 
-  ## Initializes the parser, and instance-evaluates any block given.
-  def initialize *a, &b
+  # Initializes the parser.
+  #
+  # @param args [Array] Arguments for the supplied block.
+  def initialize(*args, &block)
     @version = nil
     @leftovers = []
     @specs = {}
@@ -78,51 +80,64 @@ class Parser
     @stop_words = []
     @stop_on_unknown = false
 
-    #instance_eval(&b) if b # can't take arguments
-    cloaker(&b).bind(self).call(*a) if b
+    cloaker(&block).bind(self).call(*args) if block
   end
 
-  ## Define an option. +name+ is the option name, a unique identifier
-  ## for the option that you will use internally, which should be a
-  ## symbol or a string. +desc+ is a string description which will be
-  ## displayed in help messages.
-  ##
-  ## Takes the following optional arguments:
-  ##
-  ## [+:long+] Specify the long form of the argument, i.e. the form with two dashes. If unspecified, will be automatically derived based on the argument name by turning the +name+ option into a string, and replacing any _'s by -'s.
-  ## [+:short+] Specify the short form of the argument, i.e. the form with one dash. If unspecified, will be automatically derived from +name+.
-  ## [+:type+] Require that the argument take a parameter or parameters of type +type+. For a single parameter, the value can be a member of +SINGLE_ARG_TYPES+, or a corresponding Ruby class (e.g. +Integer+ for +:int+). For multiple-argument parameters, the value can be any member of +MULTI_ARG_TYPES+ constant. If unset, the default argument type is +:flag+, meaning that the argument does not take a parameter. The specification of +:type+ is not necessary if a +:default+ is given.
-  ## [+:default+] Set the default value for an argument. Without a default value, the hash returned by #parse (and thus Trollop::options) will have a +nil+ value for this key unless the argument is given on the commandline. The argument type is derived automatically from the class of the default value given, so specifying a +:type+ is not necessary if a +:default+ is given. (But see below for an important caveat when +:multi+: is specified too.) If the argument is a flag, and the default is set to +true+, then if it is specified on the the commandline the value will be +false+.
-  ## [+:required+] If set to +true+, the argument must be provided on the commandline.
-  ## [+:multi+] If set to +true+, allows multiple occurrences of the option on the commandline. Otherwise, only a single instance of the option is allowed. (Note that this is different from taking multiple parameters. See below.)
-  ##
-  ## Note that there are two types of argument multiplicity: an argument
-  ## can take multiple values, e.g. "--arg 1 2 3". An argument can also
-  ## be allowed to occur multiple times, e.g. "--arg 1 --arg 2".
-  ##
-  ## Arguments that take multiple values should have a +:type+ parameter
-  ## drawn from +MULTI_ARG_TYPES+ (e.g. +:strings+), or a +:default:+
-  ## value of an array of the correct type (e.g. [String]). The
-  ## value of this argument will be an array of the parameters on the
-  ## commandline.
-  ##
-  ## Arguments that can occur multiple times should be marked with
-  ## +:multi+ => +true+. The value of this argument will also be an array.
-  ## In contrast with regular non-multi options, if not specified on
-  ## the commandline, the default value will be [], not nil.
-  ##
-  ## These two attributes can be combined (e.g. +:type+ => +:strings+,
-  ## +:multi+ => +true+), in which case the value of the argument will be
-  ## an array of arrays.
-  ##
-  ## There's one ambiguous case to be aware of: when +:multi+: is true and a
-  ## +:default+ is set to an array (of something), it's ambiguous whether this
-  ## is a multi-value argument as well as a multi-occurrence argument.
-  ## In thise case, Trollop assumes that it's not a multi-value argument.
-  ## If you want a multi-value, multi-occurrence argument with a default
-  ## value, you must specify +:type+ as well.
-
-  def opt name, desc="", opts={}
+  # Define an option.
+  #
+  # Note that there are two types of argument multiplicity: an argument
+  # can take multiple values, e.g. `--arg 1 2 3`. An argument can also
+  # be allowed to occur multiple times, e.g. `--arg 1 --arg 2`.
+  #
+  # Arguments that take multiple values should have a `:type` parameter
+  # drawn from `MULTI_ARG_TYPES` (e.g. `:strings`), or a `:default`
+  # value of an array of the correct type (e.g. [`String`]). The
+  # value of this argument will be an array of the parameters on the
+  # commandline.
+  #
+  # Arguments that can occur multiple times should be marked with
+  # `:multi => true`. The value of this argument will also be an array.
+  # In contrast with regular non-multi options, if not specified on
+  # the commandline, the default value will be `[]`, not `nil`.
+  #
+  # These two attributes can be combined (e.g. `:type => :strings`,
+  # `:multi => true`), in which case the value of the argument will be
+  # an array of arrays.
+  #
+  # There's one ambiguous case to be aware of: when `:multi` is true and a
+  # `:default` is set to an array (of something), it's ambiguous whether this
+  # is a multi-value argument as well as a multi-occurrence argument.
+  # In thise case, Trollop assumes that it's not a multi-value argument.
+  # If you want a multi-value, multi-occurrence argument with a default
+  # value, you must specify `:type` as well.
+  #
+  # @param name [String] Name of the option
+  # @param desc [String] Description which will be displayed in help messages
+  # @param opts [Hash]   Optional parameters
+  # @option opts [String] :long Specify the long form of the argument, i.e. the form with two dashes. If unspecified,
+  #   will be automatically derived based on the argument name by turning the `name` option into a
+  #   string, and replacing any underscores with hyphens.
+  # @option opts [String] :short Specify the short form of the argument, i.e. the form with one dash. If unspecified,
+  #   will be automatically derived from `name`.
+  # @option opts :type Require that the argument take a parameter or parameters of type `type`. For a single
+  #   parameter, the value can be a member of `SINGLE_ARG_TYPES`, or a corresponding Ruby class (e.g.
+  #   `Integer` for `:int`). For multiple-argument parameters, the value can be any member of
+  #   `MULTI_ARG_TYPES` constant. If unset, the default argument type is `:flag`, meaning that the
+  #   argument does not take a parameter. The specification of `:type` is not necessary if a
+  #   `:default` is given.
+  # @option opts :default Set the default value for an argument. Without a default value, the hash returned
+  #   by `#parse` (and thus `Trollop::options`) will have a `nil` value for this key unless the argument
+  #   is given on the commandline. The argument type is derived automatically from the class of the
+  #   default value given, so specifying a `:type` is not necessary if a `:default` is given. (But
+  #   see below for an important caveat when `:multi` is specified too.) If the argument is a flag,
+  #   and the default is set to `true`, then if it is specified on the the commandline the value will
+  #   be `false`.
+  # @option opts [Boolean] :required If set to `true`, the argument must be provided on the commandline.
+  # @option opts [Boolean] :multi If set to `true`, allows multiple occurrences of the option on the commandline.
+  #   Otherwise, only a single instance of the option is allowed. (Note that this is different from
+  #   taking multiple parameters.)
+  # @raise [ArgumentError] When an option with the given name has already been specified.
+  def opt(name, desc="", opts={})
     raise ArgumentError, "you already have an argument named '#{name}'" if @specs.member? name
 
     ## fill in :type
@@ -150,10 +165,10 @@ class Parser
         opts[:type]
       end
 
-    ## for options with :multi => true, an array default doesn't imply
-    ## a multi-valued argument. for that you have to specify a :type
-    ## as well. (this is how we disambiguate an ambiguous situation;
-    ## see the docs for Parser#opt for details.)
+    # for options with `:multi => true`, an array default doesn't imply
+    # a multi-valued argument. for that you have to specify a `:type`
+    # as well. (this is how we disambiguate an ambiguous situation;
+    # see the docs for `Parser#opt` for details.)
     disambiguated_default = if opts[:multi] && opts[:default].is_a?(Array) && !opts[:type]
       opts[:default].first
     else
@@ -186,20 +201,25 @@ class Parser
         raise ArgumentError, "unsupported argument type '#{opts[:default].class.name}'"
       end
 
-    raise ArgumentError, ":type specification and default type don't match (default type is #{type_from_default})" if opts[:type] && type_from_default && opts[:type] != type_from_default
+    if opts[:type] && type_from_default && opts[:type] != type_from_default
+      raise ArgumentError, ":type specification and default type don't match (default type is #{type_from_default})"
+    end
 
     opts[:type] = opts[:type] || type_from_default || :flag
 
-    ## fill in :long
+    # fill in :long
     opts[:long] = opts[:long] ? opts[:long].to_s : name.to_s.gsub("_", "-")
     opts[:long] = case opts[:long]
       when /^--([^-].*)$/; $1
       when /^[^-]/; opts[:long]
       else; raise ArgumentError, "invalid long option name #{opts[:long].inspect}"
     end
-    raise ArgumentError, "long option name #{opts[:long].inspect} is already taken; please specify a (different) :long" if @long[opts[:long]]
 
-    ## fill in :short
+    if @long[opts[:long]]
+      raise ArgumentError, "long option name #{opts[:long].inspect} is already taken; please specify a (different) :long"
+    end
+
+    # fill in :short
     opts[:short] = opts[:short].to_s if opts[:short] unless opts[:short] == :none
     opts[:short] = case opts[:short]
       when /^-(.)$/; $1
@@ -208,17 +228,20 @@ class Parser
     end
 
     if opts[:short]
-      raise ArgumentError, "short option name #{opts[:short].inspect} is already taken; please specify a (different) :short" if @short[opts[:short]]
+      if @short[opts[:short]]
+        raise ArgumentError, "short option name #{opts[:short].inspect} is already taken; please specify a (different) :short"
+      end
+
       raise ArgumentError, "a short option name can't be a number or a dash" if opts[:short] =~ INVALID_SHORT_ARG_REGEX
     end
 
-    ## fill in :default for flags
+    # fill in :default for flags
     opts[:default] = false if opts[:type] == :flag && opts[:default].nil?
 
-    ## autobox :default for :multi (multi-occurrence) arguments
+    # autobox :default for :multi (multi-occurrence) arguments
     opts[:default] = [opts[:default]] if opts[:default] && opts[:multi] && !opts[:default].is_a?(Array)
 
-    ## fill in :multi
+    # fill in :multi
     opts[:multi] ||= false
 
     opts[:desc] ||= desc
@@ -228,56 +251,84 @@ class Parser
     @order << [:opt, name]
   end
 
-  ## Sets the version string. If set, the user can request the version
-  ## on the commandline. Should probably be of the form "<program name>
-  ## <version number>".
-  def version s=nil; @version = s if s; @version end
+  # Sets the version string. If set, the user can request the version
+  # on the commandline. Should probably be of the form "<program name>
+  # <version number>".
+  #
+  # @param text [String] Version string of the program.
+  # @return [String] Version string of the program.
+  def version(text = nil)
+    @version ||= text
+  end
 
-  ## Adds text to the help display. Can be interspersed with calls to
-  ## #opt to build a multi-section help page.
-  def banner s; @order << [:text, s] end
+  # Adds text to the help display. Can be interspersed with calls to
+  # `#opt` to build a multi-section help page.
+  #
+  # @param text [String] Additional help text to display for the user.
+  # @return [void]
+  def banner(text)
+    @order << [:text, text]
+  end
   alias :text :banner
 
-  ## Marks two (or more!) options as requiring each other. Only handles
-  ## undirected (i.e., mutual) dependencies. Directed dependencies are
-  ## better modeled with Trollop::die.
-  def depends *syms
-    syms.each { |sym| raise ArgumentError, "unknown option '#{sym}'" unless @specs[sym] }
-    @constraints << [:depends, syms]
-  end
-  
-  ## Marks two (or more!) options as conflicting.
-  def conflicts *syms
-    syms.each { |sym| raise ArgumentError, "unknown option '#{sym}'" unless @specs[sym] }
-    @constraints << [:conflicts, syms]
+  # Marks two (or more!) options as requiring each other. Only handles
+  # undirected (i.e., mutual) dependencies. Directed dependencies are
+  # better modeled with `Trollop::die`.
+  #
+  # @param symbols [Array<Symbol>] Options that require each other.
+  # @return [void]
+  def depends(*symbols)
+    symbols.each { |sym| raise ArgumentError, "unknown option '#{sym}'" unless @specs[sym] }
+
+    @constraints << [:depends, symbols]
   end
 
-  ## Defines a set of words which cause parsing to terminate when
-  ## encountered, such that any options to the left of the word are
-  ## parsed as usual, and options to the right of the word are left
-  ## intact.
-  ##
-  ## A typical use case would be for subcommand support, where these
-  ## would be set to the list of subcommands. A subsequent Trollop
-  ## invocation would then be used to parse subcommand options, after
-  ## shifting the subcommand off of ARGV.
-  def stop_on *words
+  # Marks two (or more!) options as conflicting.
+  #
+  # @param symbols [Array<Symbol>] Options that conflict with each other.
+  # @return [void]
+  def conflicts(*symbols)
+    symbols.each { |sym| raise ArgumentError, "unknown option '#{sym}'" unless @specs[sym] }
+
+    @constraints << [:conflicts, symbols]
+  end
+
+  # Defines a set of words which cause parsing to terminate when
+  # encountered, such that any options to the left of the word are
+  # parsed as usual, and options to the right of the word are left
+  # intact.
+  #
+  # A typical use case would be for subcommand support, where these
+  # would be set to the list of subcommands. A subsequent Trollop
+  # invocation would then be used to parse subcommand options, after
+  # shifting the subcommand off of `ARGV`.
+  #
+  # @param words [Array<String>] Words that will stop argument parsing.
+  # @return [void]
+  def stop_on(*words)
     @stop_words = [*words].flatten
   end
 
-  ## Similar to #stop_on, but stops on any unknown word when encountered
-  ## (unless it is a parameter for an argument). This is useful for
-  ## cases where you don't know the set of subcommands ahead of time,
-  ## i.e., without first parsing the global options.
+  # Similar to `#stop_on`, but stops on any unknown word when encountered
+  # (unless it is a parameter for an argument). This is useful for
+  # cases where you don't know the set of subcommands ahead of time,
+  # i.e., without first parsing the global options.
+  #
+  # @see stop_on
+  # @return [void]
   def stop_on_unknown
     @stop_on_unknown = true
   end
 
-  ## Parses the commandline. Typically called by Trollop::options,
-  ## but you can call it directly if you need more control.
-  ##
-  ## throws CommandlineError, HelpNeeded, and VersionNeeded exceptions.
-  def parse cmdline=ARGV
+  # Parses the commandline. Typically called by `Trollop::options`,
+  # but you can call it directly if you need more control.
+  #
+  # @param cmdline [Array<String>] List of command-line arguments.
+  # @return [Hash] Hash containing options and values.
+  # @raise [CommandlineError] When the command-line is malformed.
+  # @raise [HelpNeeded] When help is requested by the user.
+  # @raise [VersionNeeded] When the version information is requested by the user.
+  def parse(cmdline = ARGV)
     vals = {}
     required = {}
 
@@ -292,10 +343,10 @@ class Parser
 
     resolve_default_short_options!
 
-    ## resolve symbols
+    # resolve symbols
     given_args = {}
     @leftovers = each_arg cmdline do |arg, params|
-      ## handle --no- forms
+      # handle --no- forms
       arg, negative_given = if arg =~ /^--no-([^-]\S*)$/
         ["--#{$1}", true]
       else
@@ -337,20 +388,28 @@ class Parser
       num_params_taken
     end
 
-    ## check for version and help args
+    # check for version and help args
     raise VersionNeeded if given_args.include? :version
     raise HelpNeeded if given_args.include? :help
 
-    ## check constraint satisfaction
+    # check constraint satisfaction
     @constraints.each do |type, syms|
       constraint_sym = syms.find { |sym| given_args[sym] }
       next unless constraint_sym
 
       case type
       when :depends
-        syms.each { |sym| raise CommandlineError, "--#{@specs[constraint_sym][:long]} requires --#{@specs[sym][:long]}" unless given_args.include? sym }
+        syms.each do |sym|
+          unless given_args.include? sym
+            raise CommandlineError, "--#{@specs[constraint_sym][:long]} requires --#{@specs[sym][:long]}"
+          end
+        end
       when :conflicts
-        syms.each { |sym| raise CommandlineError, "--#{@specs[constraint_sym][:long]} conflicts with --#{@specs[sym][:long]}" if given_args.include?(sym) && (sym != constraint_sym) }
+        syms.each do |sym|
+          if given_args.include?(sym) && (sym != constraint_sym)
+            raise CommandlineError, "--#{@specs[constraint_sym][:long]} conflicts with --#{@specs[sym][:long]}"
+          end
+        end
       end
     end
 
@@ -358,7 +417,7 @@ class Parser
       raise CommandlineError, "option --#{@specs[sym][:long]} must be specified" unless given_args.include? sym
     end
 
-    ## parse parameters
+    # parse parameters
     given_args.each do |sym, given_data|
       arg, params, negative_given = given_data.values_at :arg, :params, :negative_given
 
@@ -394,12 +453,12 @@ class Parser
       # else: multiple options, with multiple parameters
     end
 
-    ## modify input in place with only those
-    ## arguments we didn't process
+    # modify input in place with only those
+    # arguments we didn't process
     cmdline.clear
     @leftovers.each { |l| cmdline << l }
 
-    ## allow openstruct-style accessors
+    # allow openstruct-style accessors
     class << vals
       def method_missing(m, *args)
         self[m] || self[m.to_s]
@@ -408,7 +467,16 @@ class Parser
     vals
   end
 
-  def parse_date_parameter param, arg #:nodoc:
+  # Parses a date parameter.
+  #
+  # @note Will use the [Chronic](https://github.com/mojombo/chronic) gem if it is installed
+  #       and loaded.
+  #
+  # @param param [String] Value to be parsed.
+  # @param arg [Symbol] Name of the option.
+  # @return [Date] Parsed date information.
+  # @raise [CommandLineError] When no value is supplied or is not recognizable as a date.
+  def parse_date_parameter(param, arg)
     begin
       begin
         time = Chronic.parse(param)
@@ -421,8 +489,11 @@ class Parser
     end
   end
 
-  ## Print the help message to +stream+.
-  def educate stream=$stdout
+  # Print the help message to `stream`.
+  #
+  # @param stream [IO] Stream to use for output of the help message.
+  # @return [void]
+  def educate(stream = $stdout)
     width # hack: calculate it now; otherwise we have to be careful not to
           # call this unless the cursor's at the beginning of a line.
     left = {}
@@ -486,7 +557,10 @@ class Parser
     end
   end
 
-  def width #:nodoc:
+  # Calculates the screen width for proper wrapping of output.
+  #
+  # @return [Integer] Screen width in characters.
+  def width
     @width ||= if $stdout.tty?
       begin
         require 'curses'
@@ -502,7 +576,12 @@ class Parser
     end
   end
 
-  def wrap str, opts={} # :nodoc:
+  # Splits the text into chunks that will fit the output width.
+  #
+  # @param [String] str Text to wrap.
+  # @param [Hash] opts Options for the wrapping.
+  # @return [Array<String>] Chunks of text equal to or shorter than the output width.
+  def wrap(str, opts = {})
     if str == ""
       [""]
     else
@@ -510,8 +589,13 @@ class Parser
     end
   end
 
-  ## The per-parser version of Trollop::die (see that for documentation).
-  def die arg, msg
+  # The per-parser version of `Trollop::die`.
+  #
+  # @param arg [Symbol] Argument that caused the error.
+  # @param msg [String] Message describing the error.
+  # @return [void]
+  # @see Trollop.die
+  def die(arg, msg)
     if msg
       $stderr.puts "Error: argument --#{@specs[arg][:long]} #{msg}."
     else
@@ -523,8 +607,8 @@ class Parser
 
 private
 
-  ## yield successive arg, parameter pairs
-  def each_arg args
+  # yield successive arg, parameter pairs
+  def each_arg(args)
     remains = []
     i = 0
 
@@ -595,17 +679,17 @@ private
     remains
   end
 
-  def parse_integer_parameter param, arg
+  def parse_integer_parameter(param, arg)
     raise CommandlineError, "option '#{arg}' needs an integer" unless param =~ /^\d+$/
     param.to_i
   end
 
-  def parse_float_parameter param, arg
+  def parse_float_parameter(param, arg)
     raise CommandlineError, "option '#{arg}' needs a floating-point number" unless param =~ FLOAT_RE
     param.to_f
   end
 
-  def parse_io_parameter param, arg
+  def parse_io_parameter(param, arg)
     case param
     when /^(stdin|-)$/i; $stdin
     else
@@ -618,7 +702,7 @@ private
     end
   end
 
-  def collect_argument_parameters args, start_at
+  def collect_argument_parameters(args, start_at)
     params = []
     pos = start_at
     while args[pos] && args[pos] !~ PARAM_RE && !@stop_words.member?(args[pos]) do
@@ -642,13 +726,13 @@ private
     end
   end
 
-  def wrap_line str, opts={}
+  def wrap_line(str, opts = {})
     prefix = opts[:prefix] || 0
     width = opts[:width] || (self.width - 1)
     start = 0
     ret = []
     until start > str.length
-      nextt = 
+      nextt =
         if start + width >= str.length
           str.length
         else
@@ -662,9 +746,9 @@ private
     ret
   end
 
-  ## instance_eval but with ability to handle block arguments
-  ## thanks to _why: http://redhanded.hobix.com/inspect/aBlockCostume.html
-  def cloaker &b
+  # instance_eval but with ability to handle block arguments
+  # thanks to _why: http://redhanded.hobix.com/inspect/aBlockCostume.html
+  def cloaker(&b)
     (class << self; self; end).class_eval do
       define_method :cloaker_, &b
       meth = instance_method :cloaker_
@@ -674,68 +758,72 @@ private
   end
 end
 
-## The easy, syntactic-sugary entry method into Trollop. Creates a Parser,
-## passes the block to it, then parses +args+ with it, handling any errors or
-## requests for help or version information appropriately (and then exiting).
-## Modifies +args+ in place. Returns a hash of option values.
-##
-## The block passed in should contain zero or more calls to +opt+
-## (Parser#opt), zero or more calls to +text+ (Parser#text), and
-## probably a call to +version+ (Parser#version).
-##
-## The returned block contains a value for every option specified with
-## +opt+.  The value will be the value given on the commandline, or the
-## default value if the option was not specified on the commandline. For
-## every option specified on the commandline, a key "<option
-## name>_given" will also be set in the hash.
-##
-## Example:
-##
-##   require 'trollop'
-##   opts = Trollop::options do
-##     opt :monkey, "Use monkey mode"                    # a flag --monkey, defaulting to false
-##     opt :name, "Monkey name", :type => :string        # a string --name <s>, defaulting to nil
-##     opt :num_limbs, "Number of limbs", :default => 4  # an integer --num-limbs <i>, defaulting to 4
-##   end
-##
-##   ## if called with no arguments
-##   p opts # => {:monkey=>false, :name=>nil, :num_limbs=>4, :help=>false}
-##
-##   ## if called with --monkey
-##   p opts # => {:monkey=>true, :name=>nil, :num_limbs=>4, :help=>false, :monkey_given=>true}
-##
-## See more examples at http://trollop.rubyforge.org.
-def options args=ARGV, *a, &b
+# The easy, syntactic-sugary entry method into Trollop. Creates a Parser,
+# passes the block to it, then parses `args` with it, handling any errors or
+# requests for help or version information appropriately (and then exiting).
+# Modifies `args` in place. Returns a hash of option values.
+#
+# The block passed in should contain zero or more calls to `opt`
+# (`Parser#opt`), zero or more calls to `text` (`Parser#text`), and
+# probably a call to `version` (`Parser#version`).
+#
+# The returned block contains a value for every option specified with
+# `opt`.  The value will be the value given on the commandline, or the
+# default value if the option was not specified on the commandline. For
+# every option specified on the commandline, a key `<option
+# name>_given` will also be set in the hash.
+#
+# @example
+#
+#   require 'trollop'
+#   opts = Trollop::options do
+#     opt :monkey, "Use monkey mode"                    # a flag --monkey, defaulting to false
+#     opt :name, "Monkey name", :type => :string        # a string --name <s>, defaulting to nil
+#     opt :num_limbs, "Number of limbs", :default => 4  # an integer --num-limbs <i>, defaulting to 4
+#   end
+#
+#   # if called with no arguments
+#   p opts # => {:monkey=>false, :name=>nil, :num_limbs=>4, :help=>false}
+#
+#   # if called with --monkey
+#   p opts # => {:monkey=>true, :name=>nil, :num_limbs=>4, :help=>false, :monkey_given=>true}
+#
+# @param [Array<String>] args Command-line arguments.
+# @param [Array] a Arguments to pass to the block.
+# @return [Hash] Hash containing options and values.
+# @see http://trollop.rubyforge.org More examples
+def options(args = ARGV, *a, &b)
   @last_parser = Parser.new(*a, &b)
   with_standard_exception_handling(@last_parser) { @last_parser.parse args }
 end
 
-## If Trollop::options doesn't do quite what you want, you can create a Parser
-## object and call Parser#parse on it. That method will throw CommandlineError,
-## HelpNeeded and VersionNeeded exceptions when necessary; if you want to
-## have these handled for you in the standard manner (e.g. show the help
-## and then exit upon an HelpNeeded exception), call your code from within
-## a block passed to this method.
-##
-## Note that this method will call System#exit after handling an exception!
-##
-## Usage example:
-##
-##   require 'trollop'
-##   p = Trollop::Parser.new do
-##     opt :monkey, "Use monkey mode"                     # a flag --monkey, defaulting to false
-##     opt :goat, "Use goat mode", :default => true       # a flag --goat, defaulting to true
-##   end
-##
-##   opts = Trollop::with_standard_exception_handling p do
-##     o = p.parse ARGV
-##     raise Trollop::HelpNeeded if ARGV.empty? # show help screen
-##     o
-##   end
-##
-## Requires passing in the parser object.
-
-def with_standard_exception_handling parser
+# If `Trollop::options` doesn't do quite what you want, you can create a `Parser`
+# object and call `Parser#parse` on it. That method will throw `CommandlineError`,
+# `HelpNeeded` and `VersionNeeded` exceptions when necessary; if you want to
+# have these handled for you in the standard manner (e.g. show the help
+# and then exit upon an `HelpNeeded` exception), call your code from within
+# a block passed to this method.
+#
+# Note that this method will call `System#exit` after handling an exception!
+#
+# @example
+#
+#   require 'trollop'
+#   p = Trollop::Parser.new do
+#     opt :monkey, "Use monkey mode"                     # a flag --monkey, defaulting to false
+#     opt :goat, "Use goat mode", :default => true       # a flag --goat, defaulting to true
+#   end
+#
+#   opts = Trollop::with_standard_exception_handling p do
+#     o = p.parse ARGV
+#     raise Trollop::HelpNeeded if ARGV.empty? # show help screen
+#     o
+#   end
+#
+# Requires passing in the parser object.
+# @param [Parser] parser Parser to use to handle the command-line arguments.
+# @return [Hash] Hash containing options and values.
+def with_standard_exception_handling(parser)
   begin
     yield
   rescue CommandlineError => e
@@ -751,25 +839,32 @@ def with_standard_exception_handling parser
   end
 end
 
-## Informs the user that their usage of 'arg' was wrong, as detailed by
-## 'msg', and dies. Example:
-##
-##   options do
-##     opt :volume, :default => 0.0
-##   end
-##
-##   die :volume, "too loud" if opts[:volume] > 10.0
-##   die :volume, "too soft" if opts[:volume] < 0.1
-##
-## In the one-argument case, simply print that message, a notice
-## about -h, and die. Example:
-##
-##   options do
-##     opt :whatever # ...
-##   end
-##
-##   Trollop::die "need at least one filename" if ARGV.empty?
-def die arg, msg=nil
+# Notifies the user of a problem with argument parsing and exits the application.
+#
+# @example Supply both argument and message
+#
+#   options do
+#     opt :volume, :default => 0.0
+#   end
+#
+#   die :volume, "too loud" if opts[:volume] > 10.0
+#   die :volume, "too soft" if opts[:volume] < 0.1
+#
+# @example Or supply just the message
+#
+#   options do
+#     opt :whatever # ...
+#   end
+#
+#   Trollop::die "need at least one filename" if ARGV.empty?
+#
+# @overload die(arg, msg)
+# @overload die(msg)
+# @param [Symbol] arg Argument that is at issue.
+# @param [String] msg Message describing the problem.
+# @return [void]
+# @raise [ArgumentError] When `Trollop::die` is called before calling `Trollop::options`.
+def die(arg, msg = nil)
   if @last_parser
     @last_parser.die arg, msg
   else
