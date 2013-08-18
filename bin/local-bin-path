@@ -22,10 +22,13 @@ opts = Trollop::options do
   opt :brew, 'Set /usr/local/bin to be before /usr/bin in the PATH order'
 end
 
-Trollop::die 'Must select either --default or --brew' unless opts[:default] || opts[:brew]
+Trollop::die 'Must select either --default or --brew but not both' unless opts[:default] ^ opts[:brew]
 
 entries = IO.readlines(paths_file)
 entries = entries.reject { |entry| entry == local_bin }
+
+puts opts
+exit
 
 if opts[:default]
   entries << local_bin
