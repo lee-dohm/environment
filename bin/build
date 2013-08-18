@@ -7,6 +7,7 @@
 lib = File.expand_path('../../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 
+require 'English'
 require 'fileutils'
 require 'shell_utilities'
 
@@ -23,6 +24,5 @@ end
 command = ['rake', ARGV].flatten.join(' ')
 command = "bundle exec #{command}" if File.exists?(File.join(dir, 'Gemfile'))
 
-retcode = 0
-cd(dir) { retcode = sh command }
-exit retcode
+cd(dir) { sh command }
+exit $CHILD_STATUS
