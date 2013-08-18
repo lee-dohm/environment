@@ -11,13 +11,15 @@ require 'shell_utilities'
 
 include ShellUtilities
 
-dir = climb { |d| File.exists?(File.join(d, 'coverage/index.html')) }
+def report(dir)
+  File.join(dir, 'coverage/index.html')
+end
 
-if dir
-  sh "open #{File.join(dir, 'coverage/index.html')}"
-else
-  puts "No coverage report found"
+dir = climb { |d| File.exists?(report(d)) }
+
+unless dir
+  puts 'No coverage report found'
   exit 1
 end
 
-exit 0
+sh "open #{report(dir)}"
