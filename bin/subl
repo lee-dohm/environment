@@ -1,0 +1,26 @@
+#!/usr/bin/env ruby -w
+
+#
+# Copyright (c) 2013 by Lifted Studios. All Rights Reserved.
+#
+
+# When invoked with either no arguments or simply "." it will
+# check for a project file in the current directory first and
+# load it if one exists.
+
+def current_dir?(args)
+  args.length == 1 && args.first == '.'
+end
+
+subl = '"/Applications/Sublime Text.app/Contents/SharedSupport/bin/subl"'
+projects = Dir['*.sublime-project']
+
+case
+when current_dir?(ARGV) && projects.length > 1
+  puts 'More than one project file detected, please specify which one to load'
+  exit 1
+when current_dir?(ARGV) && projects.length == 1
+  exec "#{subl} #{projects[0]}"
+else
+  exec subl, *ARGV
+end
