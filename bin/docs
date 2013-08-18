@@ -21,7 +21,7 @@ def open_local(opts)
   dir = climb { |d| File.exists?(File.join(d, 'doc/index.html')) }
 
   unless dir
-    puts "No documentation found"
+    puts 'No documentation found'
     return 1
   end
 
@@ -43,14 +43,14 @@ def open_official
   dir = climb { |d| File.exists?(File.join(d, '.git')) }
 
   unless dir
-    puts "No git repository found"
+    puts 'No git repository found'
     return 1
   end
 
   origin = `git remote -v`.split($/).grep(/^origin/).first
   match = /([^\/:]*\/[^.]*)\.git/.match(origin)
   unless match
-    puts "Could not find Github repo name"
+    puts 'Could not find Github repo name'
     return 1
   end
 
