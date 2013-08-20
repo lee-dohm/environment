@@ -42,7 +42,7 @@ end
 #
 # @param command Command to execute.
 def execute_git_command(command)
-  raise GitError, "Problem executing the command: git #{command}" if !(system("git #{command}"))
+  raise GitError, "Problem executing the command: git #{command}" unless system("git #{command}")
 end
 
 # Determines if the Git repository at the given path has a remote with the given name.
