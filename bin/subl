@@ -4,24 +4,31 @@
 # Copyright (c) 2013 by Lifted Studios. All Rights Reserved.
 #
 
-# When invoked with either no arguments or simply "." it will
-# check for a project file in the current directory first and
-# load it if one exists.
+# When invoked with a directory as its only argument, it will
+# check for a project file in that directory and load it if one exists.
+# Otherwise, it will pass all arguments to the regular `subl` command.
 
-def current_dir?(args)
-  args.length == 1 && args.first == '.'
+# If the first value in `args` is a directory, this function will
+# list the Sublime Text project files in that directory. Otherwise,
+# it returns `nil`.
+#
+# @param args [Array<String>] Arguments apassed on the command line.
+# @return [Array<String>] List of Sublime Text project files found.
+def projects(args)
+  return Dir[File.join(args[0], '*.sublime-project')] if args.length == 1 && Dir.exists?(args[0])
+
+  []
 end
 
-subl = '"/Applications/Sublime Text.app/Contents/SharedSupport/bin/subl"'
-projects = Dir['*.sublime-project']
+command = ['"/Applications/Sublime Text.app/Contents/SharedSupport/bin/subl"']
+project_files = projects(ARGV)
 
-command = [subl]
 case
-when current_dir?(ARGV) && projects.length > 1
+when project_files.length > 1
   puts 'More than one project file detected, please specify which one to load'
   exit 1
-when current_dir?(ARGV) && projects.length == 1
-  command << projects[0]
+when project_files.length == 1
+  command << project_files[0]
 else
   command << ARGV
 end
