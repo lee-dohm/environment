@@ -41,7 +41,7 @@ end
 # Executes the given git command and raises an error if it fails.
 #
 # @param command Command to execute.
-def execute_git_command(command)
+def git(command)
   raise GitError, "Problem executing the command: git #{command}" unless system("git #{command}")
 end
 
@@ -62,8 +62,8 @@ end
 def update_repo(path, remote_name = 'official')
   if has_remote?(path, remote_name)
     FileUtils.cd path do
-      execute_git_command "pull #{remote_name} master"
-      execute_git_command 'push'
+      git "pull #{remote_name} master"
+      git 'push'
     end
   end
 end
