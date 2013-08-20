@@ -15,12 +15,15 @@ end
 subl = '"/Applications/Sublime Text.app/Contents/SharedSupport/bin/subl"'
 projects = Dir['*.sublime-project']
 
+command = [subl]
 case
 when current_dir?(ARGV) && projects.length > 1
   puts 'More than one project file detected, please specify which one to load'
   exit 1
 when current_dir?(ARGV) && projects.length == 1
-  exec "#{subl} #{projects[0]}"
+  command << projects[0]
 else
-  exec "#{subl} #{ARGV.join(' ')}"
+  command << ARGV
 end
+
+exec command.flatten.join(' ')
