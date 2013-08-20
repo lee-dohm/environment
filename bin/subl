@@ -22,5 +22,5 @@ when current_dir?(ARGV) && projects.length > 1
 when current_dir?(ARGV) && projects.length == 1
   exec "#{subl} #{projects[0]}"
 else
-  exec subl, *ARGV
+  exec "#{subl} #{ARGV.join(' ')}"
 end
