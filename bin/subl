@@ -6,7 +6,9 @@
 
 # When invoked with a directory as its only argument, it will
 # check for a project file in that directory and load it if one exists.
-# Otherwise, it will pass all arguments to the regular `subl` command.
+# If more than one project file exists in that directory, it fails with
+# an error message. Otherwise, it will pass all arguments to the regular
+# `subl` command.
 
 # If the first value in `args` is a directory, this function will
 # list the Sublime Text project files in that directory. Otherwise,
