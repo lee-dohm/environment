@@ -5,7 +5,7 @@
 # Collection of utility functions for writing helpful Ruby shell scripts.
 module ShellUtilities
   # Climbs the directories starting with `dir` or the current working directory and returns the first directory for which the
-  # supplied block returns `true`.
+  # supplied block returns a truthy value.
   #
   # @param [String] dir Directory within which to start the search.
   # @return [String] if a matching directory is found.
