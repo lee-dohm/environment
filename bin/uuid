@@ -16,12 +16,12 @@ require 'uuidtools'
 
 opts = Trollop::options do
   opt :compact, "Output a compact format ID"
+  opt :upper, 'Use uppercase hexadecimal letters'
 end
 
 uuid = UUIDTools::UUID.random_create.to_s
 
-if (opts[:compact]) then
-  uuid.gsub!(/-/, '')
-end
+uuid.gsub!(/-/, '') if opts[:compact]
+uuid.upcase! if opts[:upper]
 
 puts uuid
