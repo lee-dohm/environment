@@ -10,6 +10,7 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require 'English'
 require 'fileutils'
 require 'shell_utilities'
+require 'shellwords'
 
 include FileUtils
 include ShellUtilities
@@ -21,8 +22,9 @@ if dir.nil?
   exit 1
 end
 
-command = ['rake', ARGV].flatten.join(' ')
-command = "bundle exec #{command}" if File.exists?(File.join(dir, 'Gemfile'))
+parts = ['rake', ARGV]
+parts.unshift(%w{bundle exec}) if File.exists?(File.join(dir, 'Gemfile'))
+command = parts.flatten.shelljoin
 
 cd(dir) { sh command }
 exit $CHILD_STATUS
