@@ -36,11 +36,13 @@ function fish_prompt --description 'Write out the prompt'
 		end
 	end
 
-	set -l delim '$'
+    set --local delim ''
 
 	switch $USER
 
 	case root
+
+        set delim '%'
 
 		if not set -q __fish_prompt_cwd
 			if set -q fish_color_cwd_root
@@ -51,6 +53,8 @@ function fish_prompt --description 'Write out the prompt'
 		end
 
 	case '*'
+
+        set delim '$'
 
 		if not set -q __fish_prompt_cwd
 			set -g __fish_prompt_cwd (set_color $fish_color_cwd)
@@ -72,6 +76,9 @@ function fish_prompt --description 'Write out the prompt'
 	if not set -q __fish_prompt_host
 		set -g __fish_prompt_host (set_color $fish_color_host)
 	end
+    if not set -q __fish_prompt_punc
+        set -g __fish_prompt_punc (set_color --bold white)
+    end
 
-	echo -n -s '[' "$__fish_prompt_user" "$USER" "$__fish_prompt_normal" @ "$__fish_prompt_host" "$__fish_prompt_hostname" "$__fish_prompt_normal" ']' (__fish_git_prompt) "$__fish_prompt_normal" "$prompt_status" ' ' "$delim" ' '
+	echo -n -s "$__fish_prompt_punc" "[$__fish_prompt_user" "$USER" "$__fish_prompt_punc" @ "$__fish_prompt_host" "$__fish_prompt_hostname" "$__fish_prompt_punc" ']' "$__fish_prompt_normal" (__fish_git_prompt) "$__fish_prompt_normal" "$prompt_status" " $delim" ' '
 end
