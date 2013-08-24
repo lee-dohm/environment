@@ -25,7 +25,7 @@ end
 task :default => :yard
 
 desc 'Install the standard environment'
-task :install => [:zsh, :tools]
+task :install => [:fish, :tools]
 
 desc 'Install the standard tools'
 task :tools => [:package_manager, :git]
@@ -67,6 +67,30 @@ end
 desc 'Print out the detected OS'
 task :os do
   puts os_name
+end
+
+task :fish_install do
+  unless File.exists? '/usr/local/bin/fish'
+    case os_name
+    when :os_x
+      sh 'brew install fish'
+    when :linux
+      sh 'apt-get install --assume-yes fish'
+    end
+  end
+end
+
+task :fish => [:fish_install] do
+  if !(ENV['SHELL'] =~ 'fish')
+    sh 'chsh -s /usr/local/bin/fish'
+  end
+
+  home = File.expand_path('~')
+  fish_config = File.join(Dir.pwd, 'Profile', 'config.fish')
+
+  File.open(File.join(home, '.config', 'fish', 'config.fish'), 'w') do |file|
+    file.puts "[ -e #{fish_config} ]; and . #{fish_config}"
+  end
 end
 
 task :zsh do
