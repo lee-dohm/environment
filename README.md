@@ -22,9 +22,10 @@ A collection of Lee's environment configuration, scripts and other goodies.
 
 The installation script performs the following actions:
 
-1. Sets the shell to `/bin/zsh`
-1. Adds a line to `~/.zshrc` to source `Profile/zshrc`
-1. If it is being executed on OS X, installs Homebrew
+1. If it is being executed on OS X, installs [Homebrew][brew]
+1. Installs the [fish shell][fish]
+1. Sets the shell to fish
+1. Adds a line to `~/.config/fish/config.fish` to source `Profile/config.fish`
 1. Installs Git
 1. Configures Git to include the configuration file at `config/git`
 1. If it is being executed on OS X, configures Git to use `config/gitignore_osx` as its global ignores file
@@ -40,6 +41,7 @@ The installation script performs the following actions:
 All else is Copyright &copy; 2011-2013 [Lee Dohm][lee], [Lifted Studios][lifted].  See [LICENSE](LICENSE.md) for details.
 
 [brew]: http://brew.sh/
+[fish]: http://fishshell.com
 [lee]: https://github.com/lee-dohm
 [lifted]: https://github.com/lifted-studios
 [osx-path]: http://serverfault.com/questions/16355/how-to-set-global-path-on-os-x

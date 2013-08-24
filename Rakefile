@@ -25,10 +25,10 @@ end
 task :default => :yard
 
 desc 'Install the standard environment'
-task :install => [:fish, :tools]
+task :install => [:package_manager, :fish, :tools]
 
 desc 'Install the standard tools'
-task :tools => [:package_manager, :git]
+task :tools => [:git]
 
 task :git => [:git_install] do
   root = Dir.pwd
