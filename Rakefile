@@ -86,10 +86,10 @@ task :fish => [:fish_install] do
   end
 
   home = File.expand_path('~')
-  fish_config = File.join(Dir.pwd, 'Profile', 'config.fish')
+  fish_config = File.join(Dir.pwd, 'fish', 'config.fish')
 
   File.open(File.join(home, '.config', 'fish', 'config.fish'), 'w') do |file|
-    file.puts "[ -e #{fish_config} ]; and . #{fish_config}"
+    file.puts "[ -r #{fish_config} ]; and . #{fish_config}"
   end
 end
 
