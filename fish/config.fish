@@ -1,5 +1,5 @@
 
-set --global --export PROFILE (status -f)
+set --global --export PROFILE (status --current-filename)
 set --global --export SCRIPT_DIR (dirname (dirname $PROFILE))
 set --global --export SOURCE_DIR (dirname $SCRIPT_DIR)
 
