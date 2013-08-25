@@ -1,0 +1,23 @@
+#!/usr/bin/env ruby -w
+
+# 
+# Copyright 2012-2013 by Lifted Studios. All Rights Reserved.
+# 
+
+require 'fileutils'
+
+FileUtils.cd(ENV['SOURCE_DIR'])
+
+command = 'yard server -m --gems '
+
+dirs = Dir['*'].reject { |d| d =~ /\./ }.select { |d| File.exist?(File.join(d, '.yardoc')) }
+
+if dirs.select { |d| d == 'ruby' } && File.exist?('ruby/.yardoc')
+  dirs = dirs.reject { |d| d == 'ruby' }
+  command << 'ruby-core ruby/.yardoc '
+  command << 'ruby-stdlib ruby/.yardoc '
+end
+
+command << dirs.map { |dn| "#{dn} #{dn}/.yardoc" }.join(' ')
+
+exec(command)
