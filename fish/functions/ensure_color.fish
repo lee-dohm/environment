@@ -2,6 +2,10 @@
 ##
 # @param var_name       Name of the environment variable that holds the color information.
 # @param set_color_args Arguments to pass to `set_color` when using this color value.
+#
+# @example
+#     ensure_color fish_color_user -o cyan
+#
 function ensure_color --description 'Ensures that the given color name is set to the supplied set_color argument array'
     set --local var_name $argv[1]
     set --local set_color_args $argv[2..-1]
