@@ -8,5 +8,9 @@ if not contains $SCRIPT_DIR/fish/functions $fish_function_path
 end
 
 for script in (ls -d $SCRIPT_DIR/fish/init/*)
+    if set -q test_login_debug
+        echo "Loading: $script"
+    end
+
     . $script
 end
