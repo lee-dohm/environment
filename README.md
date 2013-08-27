@@ -33,6 +33,7 @@ The installation script performs the following actions:
 ## Notes
 
 * [Homebrew][brew] works best if the path `/usr/local/bin` is on the `PATH` before `/usr/bin`. Follow [these instructions][osx-path] to update the defaults when installing a new OS X machine.
+* For more information on how the fish environment is configured: [fish Environment Notes][fishnotes]
 
 ## Copyright
 
@@ -42,6 +43,7 @@ All else is Copyright &copy; 2011-2013 [Lee Dohm][lee], [Lifted Studios][lifted]
 
 [brew]: http://brew.sh/
 [fish]: http://fishshell.com
+[fishnotes]: FishNotes.md
 [lee]: https://github.com/lee-dohm
 [lifted]: https://github.com/lifted-studios
 [osx-path]: http://serverfault.com/questions/16355/how-to-set-global-path-on-os-x
