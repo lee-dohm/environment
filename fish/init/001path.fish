@@ -12,13 +12,5 @@ set --local local_bin_index (contains --index /usr/local/bin $PATH)
 
 if test $local_bin_index -gt $bin_index
     set --erase $PATH[$local_bin_index]
-
-    set --local local_path ''
-    if test (math $bin_index - 1) -gt 0
-        set local_path $PATH[1..(math $bin_index - 1)]
-    end
-
-    set local_path $local_path /usr/local/bin
-    set local_path $local_path $PATH[$bin_index..-1]
-    set --global --export PATH $local_path
+    list_insert PATH bin_index /usr/local/bin
 end
