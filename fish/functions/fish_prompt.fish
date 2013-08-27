@@ -1,5 +1,5 @@
 function fish_prompt --description 'Write out the prompt'
-	
+
 	set -l last_status $status
 
 	# Just calculate these once, to save a few cycles when displaying the prompt
@@ -10,7 +10,7 @@ function fish_prompt --description 'Write out the prompt'
 	if not set -q __fish_prompt_normal
 		set -g __fish_prompt_normal (set_color normal)
 	end
-	
+
 	if not set -q -g __fish_classic_git_functions_defined
 		set -g __fish_classic_git_functions_defined
 
@@ -20,14 +20,14 @@ function fish_prompt --description 'Write out the prompt'
 				commandline -f repaint ^/dev/null
 			end
 		end
-		
+
 		function __fish_repaint_host --on-variable fish_color_host --description "Event handler, repaint when fish_color_host changes"
 			if status --is-interactive
 				set -e __fish_prompt_host
 				commandline -f repaint ^/dev/null
 			end
 		end
-		
+
 		function __fish_repaint_status --on-variable fish_color_status --description "Event handler; repaint when fish_color_status changes"
 			if status --is-interactive
 				set -e __fish_prompt_status
@@ -38,28 +38,10 @@ function fish_prompt --description 'Write out the prompt'
 
     set --local delim ''
 
-	switch $USER
-
-	case root
-
-        set delim '%'
-
-		if not set -q __fish_prompt_cwd
-			if set -q fish_color_cwd_root
-				set -g __fish_prompt_cwd (set_color $fish_color_cwd_root)
-			else
-				set -g __fish_prompt_cwd (set_color $fish_color_cwd)
-			end
-		end
-
-	case '*'
-
+    if [ (id -u) -eq (id -u root) ]
+        set delim (set_color red)'%'(set_color normal)
+    else
         set delim '$'
-
-		if not set -q __fish_prompt_cwd
-			set -g __fish_prompt_cwd (set_color $fish_color_cwd)
-		end
-
 	end
 
 	set -l prompt_status
