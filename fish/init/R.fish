@@ -1,7 +1,7 @@
 
 set --local r_profile ~/.Rprofile
 
-if [ (which R > /dev/null) -a (not [ -f $r_profile ]) ]
+if [ (which R > /dev/null) -a ! -f $r_profile ]
     set --local r_home $SCRIPT_DIR/R
 
     echo >> $r_profile
