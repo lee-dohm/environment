@@ -19,6 +19,11 @@ function list_insert --description 'Inserts values into a list before the given 
         set temp $var_value[1..(math $index - 1)]
     end
 
-    set temp $temp $values $var_value[$index..-1]
+    set temp $temp $values
+
+    if [ $index -lt (count $var_value) ]
+        set temp $temp $var_value[$index..-1]
+    end
+
     set $var_name $temp
 end
