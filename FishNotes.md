@@ -9,3 +9,5 @@ The `Rakefile` creates a login script in the normal location, `~/.config/fish/co
 1. Creates a `SOURCE_DIR` environment variable that points to the directory above the root of the project
 1. Adds `$SCRIPT_DIR/fish/functions` to the front of the `fish_function_path` list so that the functions contained here override the ones that came with fish
 1. Sources each file that matches: `$SCRIPT_DIR/fish/init/*.fish`
+
+The individual initialization scripts perform other environment configuration and initialization for particular purposes. See the comments in each script for more information.
