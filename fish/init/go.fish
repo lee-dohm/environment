@@ -9,7 +9,7 @@ if which go > /dev/null
     set --global --export GOPATH $SOURCE_DIR/gopath
     append_path_entry $GOPATH/bin
 
-    function goplay --description 
+    function goplay --description
         go run $GOROOT/misc/goplay/goplay.go $argv
     end
 end
