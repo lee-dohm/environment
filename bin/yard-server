@@ -1,8 +1,8 @@
 #!/usr/bin/env ruby -w
 
-# 
+#
 # Copyright 2012-2013 by Lifted Studios. All Rights Reserved.
-# 
+#
 
 require 'fileutils'
 
