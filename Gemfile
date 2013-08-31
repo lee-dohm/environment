@@ -1,4 +1,4 @@
 source 'https://rubygems.org'
 
-gem 'plist'
+gem 'plist', '~> 3.1'
 gem 'uuidtools', '~> 2.1'
