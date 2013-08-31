@@ -1,14 +1,12 @@
 GEM
   remote: https://rubygems.org/
   specs:
-    mini_portile (0.5.1)
-    nokogiri (1.6.0)
-      mini_portile (~> 0.5.0)
+    plist (3.1.0)
     uuidtools (2.1.4)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
-  nokogiri (~> 1.6)
+  plist
   uuidtools (~> 2.1)

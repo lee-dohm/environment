@@ -22,6 +22,15 @@ module ShellUtilities
 
     nil
   end
+  module_function :climb
+
+  # Determines if the code is being run as the `root` user.
+  #
+  # @return [Boolean] Flag indicating whether the code is being run as the `root` user.
+  def run_as_root?
+    (`id -u`.to_i) == (`id -u root`.to_i)
+  end
+  module_function :run_as_root?
 
   # Executes the given shell command.
   #
@@ -32,4 +41,5 @@ module ShellUtilities
     puts cmd if verbose
     system cmd
   end
+  module_function :sh
 end

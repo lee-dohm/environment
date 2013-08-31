@@ -1,0 +1,49 @@
+#!/usr/bin/env ruby -w
+
+#
+# Copyright (c) 2013 by Lifted Studios. All Rights Reserved.
+#
+
+# This script moves the location of the system swapfile to the given directory.
+#
+# See the [SuperUser.com answer](http://superuser.com/questions/28414/moving-the-swapfiles-to-a-dedicated-partition-in-snow-leopard)
+# for more information.
+
+lib = File.expand_path('../../lib', __FILE__)
+$LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
+
+require 'fileutils'
+require 'plist'
+require 'shell_utilities'
+require 'trollop'
+
+include ShellUtilities
+
+opts = Trollop::options do
+  opt :backup, 'Set the directory within which to place the backup file', :type => :string, :default => ENV['HOME']
+end
+
+target_dir = ARGV[0]
+target_path = File.join(target_dir, 'swapfile')
+
+Trollop::die :backup, "Directory '#{opts[:backup]}' must exist" unless Dir.exists?(opts[:backup])
+Trollop::die 'Must specify a directory to which to move the swap file' if target_dir.nil? || target_dir.empty?
+Trollop::die "Directory '#{target_dir}' must exist" unless Dir.exists?(target_dir)
+
+run_as_root? or fail 'Script must be run with superuser privileges, try using sudo'
+
+plist_path = '/System/Library/LaunchDaemons/com.apple.dynamic_pager.plist'
+backup_path = File.join(opts[:backup], File.basename(plist_path))
+
+FileUtils.cp(plist_path, backup_path)
+
+plist = Plist::parse_xml(plist_path)
+args = []
+args << '/bin/bash'
+args << '-c'
+args << "/bin/wait4path #{target_dir} &amp;&amp; /sbin/dynamic_pager -F #{target_path}"
+plist['ProgramArguments'] = args
+
+File.open(plist_path, 'w') do |file|
+  file.puts(plist.to_plist)
+end
