@@ -1,17 +1,17 @@
 
 if which postgres > /dev/null
-    set --global --export POSTGRES_DATA /usr/local/var/postgres
+    set --global --export PGDATA /usr/local/var/postgres
+    set --global --export POSTGRES_LOG $PGDATA/postgres.log
 
-    function start_postgres
-        set --local logfile $argv[1]
-        if [ -z $logfile ]
-            set logfile ~/postgres.log
-        end
-
-        pg_ctl start --pgdata $POSTGRES_DATA --log $logfile
+    function postgres_start
+        pg_ctl start --log $POSTGRES_LOG $argv
     end
 
-    function stop_postgres
-        pg_ctl stop --pgdata $POSTGRES_DATA
+    function postgres_status
+        pg_ctl status $argv
+    end
+
+    function postgres_stop
+        pg_ctl stop $argv
     end
 end
