@@ -1,9 +1,6 @@
 
 if which go > /dev/null
-    set --local go_bin (which go)
-    set --local go_link (readlink -n $go_bin)
-    set --local link_base (dirname $go_bin)
-    set --local go_dir (dirname (dirname (absolute_path $link_base/$go_link)))
+    set --local go_dir (get_active_brew_dir (which go))
 
     set --global --export GOROOT $go_dir
     set --global --export GOPATH $SOURCE_DIR/gopath
