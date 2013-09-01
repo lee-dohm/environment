@@ -1,0 +1,78 @@
+#!/usr/bin/env ruby -w
+
+#
+# Copyright (c) 2013 by Lifted Studios. All Rights Reserved.
+#
+
+# Intended to be used to throttle command-line tools to prevent them from firing off too often. The command is given an identifier,
+# typically the name of the command, and a minimum time between executions. If the minimum time has passed, `throttle` returns
+# success; otherwise, it returns an error code. The default minimum time is one day.
+#
+# @example Standard usage
+#     throttle identifier
+#
+# @example Check using a minimum time of thirty minutes
+#     throttle --interval 30m identifier
+
+lib = File.expand_path('../../lib', __FILE__)
+$LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
+
+require 'fileutils'
+require 'time'
+require 'trollop'
+
+def convert(multiplier, unit)
+  seconds = 1
+  minutes = seconds * 60
+  hours = minutes * 60
+  days = hours * 24
+
+  case unit
+  when 'd' then multiplier * days
+  when 'h' then multiplier * hours
+  when 'm' then multiplier * minutes
+  when 's' then multiplier * seconds
+  end
+end
+
+opts = Trollop::options do
+  banner <<-EOS
+throttle returns an error code indicating if a specified interval has passed since the last time a given activity was performed. Each activity must be given a unique identifier.
+
+Usage:
+    throttle [options] identifier
+
+where [options] are:
+  EOS
+
+  opt :interval, 'Sets the minimum time to wait between invocations', :default => '1d'
+end
+
+Trollop::die 'Must supply an identifier' unless ARGV.length > 0
+
+unless opts[:interval] =~ /(?<mult>\d+)(?<unit>[smhd])/
+  Trollop::die :interval, 'must be of the format "nx" where "n" is a number and "x" is a unit of time'
+end
+
+dir = File.join(ENV['HOME'], '.throttle')
+identifier = ARGV.first
+seconds = convert(Regexp.last_match['mult'].to_i, Regexp.last_match['unit'])
+sentinel = File.join(dir, identifier)
+
+FileUtils.mkdir_p(dir) unless Dir.exists?(dir)
+
+retval = 0
+now = Time.now
+if File.exists?(sentinel)
+  last = Time.parse(File.readlines(sentinel).first)
+
+  if last + seconds <= now
+    retval = 0
+  else
+    retval = 1
+  end
+end
+
+File.open(sentinel, 'w') { |f| f.puts now } if retval == 0
+
+exit retval
