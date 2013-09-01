@@ -32,7 +32,7 @@ The installation script performs the following actions:
 
 ## Notes
 
-* [Homebrew][brew] works best if the path `/usr/local/bin` is on the `PATH` before `/usr/bin`. Follow [these instructions][osx-path] to update the defaults when installing a new OS X machine.
+* [Homebrew][brew] works best if the path `/usr/local/bin` is on the `PATH` before `/usr/bin`. If running a shell other than fish, follow [these instructions][osx-path] to update the defaults when installing a new OS X machine. The fish environment includes a dynamic fix.
 * For more information on how the fish environment is configured: [fish Environment Notes][fishnotes]
 * The zsh configuration rooted in `Profile` should be considered deprecated at this point. It is remaining in the tree for now in case fish fails me for some reason.
 
