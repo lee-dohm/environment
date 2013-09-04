@@ -21,6 +21,11 @@ require 'fileutils'
 require 'time'
 require 'trollop'
 
+# Converts the interval components into a number of seconds.
+#
+# @param [Integer] multiplier Number of units to count.
+# @param [String] unit Character indicating the unit of time to count out.
+# @return [Integer] Number of seconds represented by the interval.
 def convert(multiplier, unit)
   seconds = 1
   minutes = seconds * 60
@@ -35,21 +40,33 @@ def convert(multiplier, unit)
   end
 end
 
-opts = Trollop::options do
-  banner File.read(File.expand_path('../../help/throttle_banner.txt', __FILE__))
+# Parses the command line options.
+#
+# @return [Hash] Set of options supplied to the program.
+def parse_options
+  opts = Trollop::options do
+    banner File.read(File.expand_path('../../help/throttle_banner.txt', __FILE__))
 
-  opt :interval, 'Sets the minimum time to wait between invocations', :default => '1d'
+    opt :interval, 'Sets the minimum time to wait between invocations', :default => '1d'
+  end
+
+  Trollop::die 'Must supply an identifier' unless ARGV.length > 0
+
+  unless opts[:interval] =~ /(?<mult>\d+)(?<unit>[smhd])/
+    Trollop::die :interval, 'must be of the format "nx" where "n" is a number and "x" is a unit of time'
+  end
+
+  opts[:multiplier] = Regexp.last_match['mult']
+  opts[:unit] = Regexp.last_match['unit']
+
+  opts
 end
 
-Trollop::die 'Must supply an identifier' unless ARGV.length > 0
-
-unless opts[:interval] =~ /(?<mult>\d+)(?<unit>[smhd])/
-  Trollop::die :interval, 'must be of the format "nx" where "n" is a number and "x" is a unit of time'
-end
+parse_options
 
 dir = File.join(ENV['HOME'], '.throttle')
 identifier = ARGV.first
-seconds = convert(Regexp.last_match['mult'].to_i, Regexp.last_match['unit'])
+seconds = convert(opts[:multiplier].to_i, opts[:unit])
 sentinel = File.join(dir, identifier)
 
 FileUtils.mkdir_p(dir) unless Dir.exists?(dir)
