@@ -36,14 +36,7 @@ def convert(multiplier, unit)
 end
 
 opts = Trollop::options do
-  banner <<-EOS
-throttle returns an error code indicating if a specified interval has passed since the last time a given activity was performed. Each activity must be given a unique identifier.
-
-Usage:
-    throttle [options] identifier
-
-where [options] are:
-  EOS
+  banner File.read(File.expand_path('../../help/throttle_banner.txt', __FILE__))
 
   opt :interval, 'Sets the minimum time to wait between invocations', :default => '1d'
 end

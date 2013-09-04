@@ -1,0 +1,6 @@
+throttle returns an error code indicating if a specified interval has passed since the last time a given activity was performed. Each activity must be given a unique identifier.
+
+Usage:
+    throttle [options] identifier
+
+where [options] are:
