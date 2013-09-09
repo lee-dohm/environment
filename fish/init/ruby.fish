@@ -7,3 +7,5 @@ if not functions --query rvm; or should_update_rvm_function
 end
 
 rvm use default > /dev/null
+
+set --global --export RAILS_ENV development
