@@ -7,6 +7,10 @@ if not contains $SCRIPT_DIR/fish/functions $fish_function_path
     set fish_function_path $SCRIPT_DIR/fish/functions $fish_function_path
 end
 
+if [ -n $fish_greeting ]
+    set --universal fish_greeting ''
+end
+
 for script in (ls -d $SCRIPT_DIR/fish/init/*.fish)
     if set -q test_login_debug
         echo "Loading: $script"
