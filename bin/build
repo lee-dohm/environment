@@ -27,4 +27,4 @@ parts.unshift(%w{bundle exec}) if File.exists?(File.join(dir, 'Gemfile'))
 command = parts.flatten.shelljoin
 
 cd(dir) { sh command }
-exit $CHILD_STATUS
+exit $CHILD_STATUS.exitstatus
