@@ -1,0 +1,18 @@
+#!/usr/bin/env ruby -w
+
+#
+# Copyright (c) 2013 by Lifted Studios. All Rights Reserved.
+#
+
+ARGF.each do |line|
+  begin
+    case line
+    when /^\s*$/ then next
+    when /^\s*#/ then next
+    when /^\s*end\s*$/ then next
+    else puts line.length
+    end
+  rescue ArgumentError
+    # Ignore line
+  end
+end
