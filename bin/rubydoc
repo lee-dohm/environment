@@ -4,6 +4,10 @@
 # Copyright (c) 2013 by Lifted Studios. All Rights Reserved.
 #
 
-ARGV.each do |arg|
-  system("open http://rubydoc.info/gems/#{arg}")
+if ARGV.count == 0
+  system('open http://rubydoc.info/stdlib')
+else
+  ARGV.each do |arg|
+    system("open http://rubydoc.info/gems/#{arg}")
+  end
 end
