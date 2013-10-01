@@ -17,6 +17,7 @@ A collection of Lee's environment configuration, scripts and other goodies.
 1. Open a shell window
 1. Change to the directory where the repository is installed
 1. Execute the command: `rake install`
+1. Execute the command: `bundle install`
 
 ### Actions
 
