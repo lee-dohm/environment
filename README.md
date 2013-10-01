@@ -36,6 +36,28 @@ The installation script performs the following actions:
 * For more information on how the fish environment is configured: [fish Environment Notes][fishnotes]
 * The zsh configuration rooted in `Profile` should be considered deprecated at this point. It is remaining in the tree for now in case fish fails me for some reason.
 
+### git-process
+
+I've added the [git-process][process] gem to the standard environment. This enables a simpler way to do a proper branching work flow in Git. Here is the standard single-user work flow:
+
+* Start a new branch
+
+```bash
+$ git new-fb [branch name]
+```
+
+* Update feature branch with the latest from the integration branch (also pushes feature branch to the remote server)
+
+```bash
+$ git sync
+```
+
+* Rebase feature branch onto integration branch and push integration branch to origin server
+
+```bash
+$ git to-master
+```
+
 ## Copyright
 
 `lib/trollop.rb` is Copyright &copy; 2008-2012 William Morgan. Trollop is distributed under the same terms as Ruby. For more information see [the Trollop homepage][trollop].
@@ -48,6 +70,7 @@ All else is Copyright &copy; 2011-2013 [Lee Dohm][lee], [Lifted Studios][lifted]
 [lee]: https://github.com/lee-dohm
 [lifted]: https://github.com/lifted-studios
 [osx-path]: http://serverfault.com/questions/16355/how-to-set-global-path-on-os-x
+[process]: https://github.com/jdigger/git-process
 [rake]: http://www.rubygems.org/gems/rake
 [ruby]: http://www.ruby-lang.org
 [rvm]: https://rvm.io/
