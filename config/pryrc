@@ -1,0 +1,3 @@
+
+Pry.config.editor = 'subl --wait'
+Pry.config.theme = 'pry-modern-256'

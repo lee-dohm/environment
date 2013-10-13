@@ -13,6 +13,13 @@ def git_config_get(key)
   `git config --global --get #{key}`.split($RS)
 end
 
+# Gets the user's home directory.
+#
+# @return [String] Absolute path to the user's home directory.
+def home
+  File.expand_path('~')
+end
+
 # @return [Symbol] OS identifier.
 def os_name
   case `uname -s`
@@ -28,7 +35,7 @@ desc 'Install the standard environment'
 task :install => [:package_manager, :fish, :tools]
 
 desc 'Install the standard tools'
-task :tools => [:git]
+task :tools => [:git, :pry]
 
 task :git => [:git_install] do
   root = Dir.pwd
@@ -58,6 +65,14 @@ task :git_install do
   end
 end
 
+task :pry => :pry_config
+
+task :pry_config do
+  mkdir_p File.join(home, '.pry', 'themes')
+  cp './config/blackboard.prytheme.rb', File.join(home, '.pry', 'themes')
+  cp './config/pryrc', File.join(home, '.pryrc')
+end
+
 task :package_manager do
   if os_name == :os_x && !(File.exists? '/usr/local/bin/brew')
     sh 'ruby -e "$(curl -fsSL https://raw.github.com/mxcl/homebrew/go)"'
@@ -85,7 +100,6 @@ task :fish => [:fish_install] do
     sh 'chsh -s /usr/local/bin/fish'
   end
 
-  home = File.expand_path('~')
   fish_config = File.join(Dir.pwd, 'fish', 'config.fish')
 
   File.open(File.join(home, '.config', 'fish', 'config.fish'), 'w') do |file|
@@ -98,7 +112,6 @@ task :zsh do
     sh "chsh -s /bin/zsh"
   end
 
-  home = File.expand_path('~')
   zshrc = File.join(Dir.pwd, 'Profile', 'zshrc')
 
   File.open(File.join(home, '.zshrc'), 'w') do |file|
