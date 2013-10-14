@@ -8,6 +8,8 @@ GEM
     faraday_middleware (0.9.0)
       faraday (>= 0.7.4, < 0.9)
     gem-man (0.3.0)
+    gist (4.1.1)
+      json
     git-new-fb (2.0.2)
       git-process-lib (= 2.0.2)
     git-process (2.0.2)
@@ -59,6 +61,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  gist
   git-process
   plist (~> 3.1)
   pry

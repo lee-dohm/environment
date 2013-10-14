@@ -1,5 +1,6 @@
 source 'https://rubygems.org'
 
+gem 'gist'
 gem 'git-process'
 gem 'plist', '~> 3.1'
 gem 'pry'
