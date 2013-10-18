@@ -35,3 +35,9 @@
     dag = log --graph --decorate --pretty=oneline --abbrev-commit --all
     lola = log --graph --decorate --pretty=oneline --abbrev-commit --all
     st = status
+
+[man "gem-man"]
+    cmd = gem man -s
+
+[man]
+    viewer = gem-man
