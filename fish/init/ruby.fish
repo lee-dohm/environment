@@ -37,5 +37,3 @@ function rbenv
       command rbenv $command $args
   end
 end
-
-set --global --export RAILS_ENV development
