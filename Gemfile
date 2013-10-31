@@ -2,6 +2,7 @@ source 'https://rubygems.org'
 
 gem 'gist'
 gem 'git-process'
+gem 'lolcommits'
 gem 'plist', '~> 3.1'
 gem 'pry'
 gem 'pry-theme'

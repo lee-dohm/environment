@@ -95,11 +95,7 @@ task :fish_install do
   end
 end
 
-task :fish => [:fish_install] do
-  if !(ENV['SHELL'] =~ 'fish')
-    sh 'chsh -s /usr/local/bin/fish'
-  end
-
+task :fish do
   fish_config = File.join(Dir.pwd, 'fish', 'config.fish')
 
   File.open(File.join(home, '.config', 'fish', 'config.fish'), 'w') do |file|
