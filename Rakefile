@@ -35,7 +35,14 @@ desc 'Install the standard environment'
 task :install => [:package_manager, :fish, :tools]
 
 desc 'Install the standard tools'
-task :tools => [:git, :pry]
+task :tools => [:git, :ruby]
+
+desc 'Install Ruby environment'
+task :ruby => [:gemrc, :pry]
+
+task :gemrc do
+  cp './config/gemrc', File.join(home, '.gemrc')
+end
 
 task :git => [:git_install] do
   root = Dir.pwd
@@ -100,18 +107,6 @@ task :fish do
 
   File.open(File.join(home, '.config', 'fish', 'config.fish'), 'w') do |file|
     file.puts "[ -r #{fish_config} ]; and . #{fish_config}"
-  end
-end
-
-task :zsh do
-  if ENV['SHELL'] != '/bin/zsh'
-    sh "chsh -s /bin/zsh"
-  end
-
-  zshrc = File.join(Dir.pwd, 'Profile', 'zshrc')
-
-  File.open(File.join(home, '.zshrc'), 'w') do |file|
-    file.puts "[[ -e #{zshrc} ]] && source #{zshrc}"
   end
 end
 

@@ -1,0 +1,27 @@
+#!/usr/bin/env ruby
+
+#
+# Copyright (c) 2013 by Lifted Studios. All Rights Reserved.
+#
+
+require 'fileutils'
+require 'yaml'
+
+def ensure_destination(app)
+  dest = expand(app['destination'])
+  FileUtils::Verbose.mkdir_p(dest)
+  dest
+end
+
+def expand(path)
+  path.gsub!(/~/, ENV['HOME'])
+end
+
+config = YAML.parse(expand('~/.backup-config.yaml'))
+
+config.keys.each do |app|
+  destination = ensure_destination(app)
+  app['sources'].each do |source|
+    FileUtils::Verbose.cp_r(expand(source), destination)
+  end
+end
