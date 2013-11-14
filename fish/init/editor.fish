@@ -1,5 +1,7 @@
 
-if [ (uname -s) = 'Darwin' -a -f '/Applications/Sublime Text.app/Contents/SharedSupport/bin/subl' ]
+if which emacs > /dev/null
+    set --global --export EDITOR emacs
+else if which subl > /dev/null
     set --global --export EDITOR 'subl --wait'
 else
     set --global --export EDITOR vim
