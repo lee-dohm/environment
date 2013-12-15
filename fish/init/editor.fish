@@ -1,12 +1,13 @@
+#
+# Copyright (c) 2013 by Lifted Studios. All rights reserved.
+#
 
 if which emacs > /dev/null
-    set --global --export EDITOR "emacsclient -t"
-    set --global --export ALTERNATE_EDITOR ''
+    set --global --export EDITOR "emacs"
 
-    alias e='emacsclient -t'
-    alias ec='emacsclient -c'
-    alias vim='emacsclient -t'
-    alias vi='emacsclient -t'
+    alias e='emacs'
+    alias vim='emacs'
+    alias vi='emacs'
 else if which subl > /dev/null
     set --global --export EDITOR 'subl --wait'
 else
