@@ -9,4 +9,4 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 
 require 'report'
 
-open_report('coverage/index.html')
+open_report('security/index.html')
