@@ -1,4 +1,3 @@
-
 if [ -d ~/.rbenv ]
     set --export PATH ~/.rbenv/shims $PATH
     rbenv rehash > /dev/null ^&1
@@ -38,10 +37,4 @@ if [ -d ~/.rbenv ]
           command rbenv $command $args
       end
     end
-end
-
-set --local bundled_commands foreman guard haml html2haml pry rackup rails rake rspec
-
-for command in $bundled_commands
-    alias $command="run_with_bundler $command"
 end
