@@ -20,6 +20,13 @@ def home
   File.expand_path('~')
 end
 
+# Gets the root path to use for environment project files.
+#
+# @return [String] Absolute path to the environment directory root.
+def root
+  File.expand_path('..', __FILE__)
+end
+
 # @return [Symbol] OS identifier.
 def os_name
   case `uname -s`
@@ -41,12 +48,10 @@ desc 'Install Ruby environment'
 task :ruby => [:gemrc, :pry]
 
 task :gemrc do
-  cp './config/gemrc', File.join(home, '.gemrc')
+  symlink(File.join(root, 'config/gemrc'), File.join(home, '.gemrc'))
 end
 
 task :git => [:git_install] do
-  root = Dir.pwd
-
   include_path = File.join(root, 'config', 'git')
   if !(git_config_get('include.path').any? { |path| path =~ /^#{include_path}/ })
     sh "git config --global --add include.path '#{include_path}'"
@@ -75,9 +80,7 @@ end
 task :pry => :pry_config
 
 task :pry_config do
-  mkdir_p File.join(home, '.pry', 'themes')
-  cp './config/blackboard.prytheme.rb', File.join(home, '.pry', 'themes')
-  cp './config/pryrc', File.join(home, '.pryrc')
+  symlink(File.join(root, 'config/pryrc'), File.join(home, '.pryrc'))
 end
 
 task :package_manager do
@@ -91,7 +94,7 @@ task :os do
   puts os_name
 end
 
-task :fish_install do
+task :fish_install => :package_manager do
   unless File.exists? '/usr/local/bin/fish'
     case os_name
     when :os_x
