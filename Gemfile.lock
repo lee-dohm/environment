@@ -84,8 +84,6 @@ GEM
       coderay (~> 1.0.5)
       method_source (~> 0.8)
       slop (~> 3.4)
-    pry-theme (0.2.0)
-      json
     rake (10.0.3)
     rest-client (1.6.7)
       mime-types (>= 1.16)
@@ -109,7 +107,6 @@ DEPENDENCIES
   lolcommits
   plist (~> 3.1)
   pry
-  pry-theme
   rake
   uuidtools (~> 2.1)
   yard
