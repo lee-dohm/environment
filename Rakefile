@@ -3,6 +3,7 @@
 #
 
 require 'English'
+require 'fileutils'
 require 'yard'
 
 # Retrieves all global values of the given `key`.
@@ -17,14 +18,14 @@ end
 #
 # @return [String] Absolute path to the user's home directory.
 def home
-  File.expand_path('~')
+  ENV['HOME']
 end
 
 # Gets the root path to use for environment project files.
 #
 # @return [String] Absolute path to the environment directory root.
 def root
-  File.expand_path('..', __FILE__)
+  File.dirname(__FILE__)
 end
 
 # @return [Symbol] OS identifier.
@@ -36,10 +37,27 @@ def os_name
   end
 end
 
+# Symlinks the file or directory at `src` to `~/dest`.
+#
+# @param [String] src Source file or directory.
+# @param [String] dest Destination path beneath `HOME`.
+# @return [nil]
+def symlink_home(src, dest)
+  actual_src = File.join(root, src)
+  actual_dest = File.join(home, dest)
+
+  if( !File.exists?(actual_dest) || File.symlink?(actual_dest) )
+    FileUtils.rm(actual_dest) if File.symlink?(actual_dest)
+    FileUtils.ln_s(File.join(actual_src), actual_dest)
+    puts "  #{dest} -> #{src}"
+  else
+    puts "  Unable to symlink #{dest} because it exists and is not a symlink"
+  end
+end
 task :default => :yard
 
 desc 'Install the standard environment'
-task :install => [:package_manager, :fish, :tools]
+task :install => [:package_manager, :fish, :tools, :bin]
 
 desc 'Install the standard tools'
 task :tools => [:git, :ruby]
@@ -47,8 +65,12 @@ task :tools => [:git, :ruby]
 desc 'Install Ruby environment'
 task :ruby => [:gemrc, :pry]
 
+task :bin do
+  symlink_home('bin', 'bin')
+end
+
 task :gemrc do
-  symlink(File.join(root, 'config/gemrc'), File.join(home, '.gemrc'))
+  symlink_home('config/gemrc', '.gemrc')
 end
 
 task :git => [:git_install] do
@@ -80,7 +102,7 @@ end
 task :pry => :pry_config
 
 task :pry_config do
-  symlink(File.join(root, 'config/pryrc'), File.join(home, '.pryrc'))
+  symlink_home('config/pryrc', '.pryrc')
 end
 
 task :package_manager do
