@@ -1,0 +1,47 @@
+#!/usr/bin/env ruby -w
+
+lib = File.expand_path('../../lib', __FILE__)
+$LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
+
+require 'fileutils'
+require 'trollop'
+
+opts = Trollop::options do
+  opt :clean, 'Clean all but the latest backup directory'
+  opt :dry_run, 'Display what would be done, but do not actually do it', short: :n
+  opt :verbose, 'Verbose output'
+end
+
+CASK_DIR = File.dirname(File.dirname(`cask package-directory`))
+if opts[:dry_run]
+  FILE_UTILS = FileUtils::DryRun
+elsif opts[:verbose]
+  FILE_UTILS = FileUtils::Verbose
+else
+  FILE_UTILS = FileUtils
+end
+
+# Removes all but the newest backup directory.
+def clean_backups
+  backup_mask = "#{CASK_DIR}-backup-*"
+  backup_dirs = Dir[backup_mask]
+  old_backup_dirs = backup_dirs.take(backup_dirs.count - 1)
+
+  FILE_UTILS.rm_r(old_backup_dirs, secure: true)
+
+  exit 0
+end
+
+FileUtils.cd(File.join(ENV['HOME'], '.emacs.d')) do
+  clean_backups if opts[:clean]
+
+  backup_dir = "#{CASK_DIR}-backup-#{Time.now.strftime('%Y%m%d')}"
+  FILE_UTILS.cp_r(CASK_DIR, backup_dir)
+
+  if opts[:dry_run] || opts[:verbose]
+    puts "Update cask at #{CASK_DIR}"
+    exit 0 if opts[:dry_run]
+  end
+
+  system('cask update')
+end
