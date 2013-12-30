@@ -1,4 +1,3 @@
-
 # Lee's Environment
 
 A collection of Lee's environment configuration, scripts and other goodies.

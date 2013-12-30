@@ -3,11 +3,11 @@
 #
 
 if which emacs > /dev/null
-    set --global --export EDITOR "emacs"
+    set --global --export EDITOR "ec"
 
-    alias e='emacs'
-    alias vim='emacs'
-    alias vi='emacs'
+    alias e='ec'
+    alias vim='ec'
+    alias vi='ec'
 else if which subl > /dev/null
     set --global --export EDITOR 'subl --wait'
 else
