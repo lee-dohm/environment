@@ -1,4 +1,9 @@
+[user]
+    name = Lee Dohm
+    email = lee@liftedstudios.com
+
 [core]
+    excludesfile = ~/.gitignore
     pager = less -XR -x2
 
 [push]
@@ -33,7 +38,6 @@
     ci = commit
     co = checkout
     dag = log --graph --decorate --pretty=oneline --abbrev-commit --all
-    lola = log --graph --decorate --pretty=oneline --abbrev-commit --all
     st = status
 
 [man "gem-man"]
@@ -41,3 +45,6 @@
 
 [man]
     viewer = gem-man
+
+[include]
+    path = ~/.gitconfig-overrides

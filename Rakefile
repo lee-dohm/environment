@@ -1,18 +1,10 @@
 #
-# Copyright (c) 2013 by Lifted Studios. All Rights Reserved.
+# Copyright (c) 2013, 2014 by Lifted Studios. All Rights Reserved.
 #
 
 require 'English'
 require 'fileutils'
 require 'yard'
-
-# Retrieves all global values of the given `key`.
-#
-# @param [String] key Configuration key for which to retrieve values.
-# @return [Array<String>] List of values for the given `key`.
-def git_config_get(key)
-  `git config --global --get #{key}`.split($RS)
-end
 
 # Gets the user's home directory.
 #
@@ -73,18 +65,19 @@ task :gemrc do
   symlink_home('config/gemrc', '.gemrc')
 end
 
-task :git => [:git_install] do
-  include_path = File.join(root, 'config', 'git')
-  if !(git_config_get('include.path').any? { |path| path =~ /^#{include_path}/ })
-    sh "git config --global --add include.path '#{include_path}'"
+task :git => [:git_install, :git_config]
+
+task :git_config do
+  if !File.exists?(File.join(home, '.gitconfig'))
+    symlink_home(File.join(root, 'config', 'git'), '.gitconfig')
   end
 
   if os_name == :os_x
     excludes_path = File.join(root, 'config', 'gitignore_osx')
   end
 
-  if excludes_path && !(git_config_get('core.excludesfile').any? { |path| path =~ /^#{excludes_path}/ })
-    sh "git config --global --add core.excludesfile '#{excludes_path}'"
+  if excludes_path && !File.exist?(File.join(home, '.gitignore'))
+    symlink_home(excludes_path, '.gitignore')
   end
 end
 
