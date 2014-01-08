@@ -2,7 +2,13 @@
 
 # Variables global to the init scripts
 OS=$(uname -s)
-SCRIPT_DIR=$HOME/Source/environment
+
+if [[ $OS == 'Darwin' ]]; then
+    SCRIPT_DIR=$(dirname $(dirname $(readlink $HOME/.zshrc)))
+else
+    SCRIPT_DIR=$HOME/Source/environment
+fi
+
 SOURCE_DIR=`dirname $SCRIPT_DIR`
 
 # Load more specific initializations
