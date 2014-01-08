@@ -1,0 +1,13 @@
+#!/bin/zsh
+
+# Variables global to the init scripts
+OS=$(uname -s)
+SCRIPT_DIR=$HOME/Source/environment
+SOURCE_DIR=`dirname $SCRIPT_DIR`
+
+# Load more specific initializations
+for init in `ls -d1 $SCRIPT_DIR/zsh/init/*`
+do
+    source $init
+done
+unset init
