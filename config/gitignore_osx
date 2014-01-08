@@ -17,6 +17,9 @@ tramp
 # flymake-mode
 *_flymake.*
 
+# Projectile
+.projectile
+
 ### SublimeText ###
 
 /*.sublime-project
