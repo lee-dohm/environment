@@ -17,7 +17,7 @@ Git is a requirement before any of this can be installed. I really should figure
 
 ### Install Homebrew
 
-See the [official Homebrew installation instructions](http://brew.sh/).
+See the [official Homebrew installation instructions][brew].
 
 ### Install Ruby
 
@@ -54,18 +54,12 @@ $ git to-master
 
 ## Copyright
 
-`lib/trollop.rb` is Copyright &copy; 2008-2012, 2014 William Morgan. Trollop is distributed under the same terms as Ruby. For more information see [the Trollop homepage][trollop].
+`lib/trollop.rb` is Copyright &copy; 2008-2012 William Morgan. Trollop is distributed under the same terms as Ruby. For more information see [the Trollop homepage][trollop].
 
-All else is Copyright &copy; 2011-2013 [Lee Dohm][lee], [Lifted Studios][lifted].  See [LICENSE](LICENSE.md) for details.
+All else is Copyright &copy; 2011-2014 [Lee Dohm][lee], [Lifted Studios][lifted].  See [LICENSE](LICENSE.md) for details.
 
 [brew]: http://brew.sh/
-[fish]: http://fishshell.com
-[fishnotes]: FishNotes.md
 [lee]: https://github.com/lee-dohm
 [lifted]: https://github.com/lifted-studios
-[osx-path]: http://serverfault.com/questions/16355/how-to-set-global-path-on-os-x
 [process]: https://github.com/jdigger/git-process
-[rake]: http://www.rubygems.org/gems/rake
-[ruby]: http://www.ruby-lang.org
-[rvm]: https://rvm.io/
 [trollop]: http://trollop.rubyforge.org/
