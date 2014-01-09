@@ -5,7 +5,9 @@
 # that `/usr/local/bin` is first and then remove any duplicates when I'm done while continuing to
 # maintain relative order of the first instance of any entry.
 #
-# Oh, and I wanted to make it so this would work with only POSIX-guaranteed utilities.
+# Oh, and I wanted to make it so this would work with only POSIX-guaranteed utilities. There may
+# still be bits of code that depend on bash or zsh features though. These should be fixed when they
+# are discovered.
 
 # Appends the first argument to the `PATH` iff:
 #
@@ -45,29 +47,38 @@ __get-index () {
     __split-string $text ':' | awk "/$search/{print NR - 1}" | head -n 1
 }
 
-if [[ `__get-index $PATH /usr/local/bin` -gt `__get-index $PATH /usr/bin` ]]; then
-    PATH="/usr/local/bin:$PATH"
-fi
+# Removes duplicate path entries.
+#
+# @see http://unix.stackexchange.com/a/40973/10613
+__remove-path-duplicates () {
+    set -f
+    IFS=:
+    old_PATH=$PATH:
+    PATH=
+    while [ -n "$old_PATH" ]; do
+        x=${old_PATH%%:*}
+        case $PATH: in
+            *:${x}:*) :;;
+            *) PATH=$PATH:$x;;
+        esac
+        old_PATH=${old_PATH#*:}
+    done
+    PATH=${PATH#:}
+    set +f
+    unset IFS old_PATH x
+}
+
+# Checks to ensure that `/usr/local/bin` is before `/usr/bin` in the `PATH`. If not, it puts it in
+# front.
+__local-fixup () {
+    if [[ `__get-index $PATH /usr/local/bin` -gt `__get-index $PATH /usr/bin` ]]; then
+        PATH="/usr/local/bin:$PATH"
+    fi
+}
+
+__local-fixup
 
 __append-path-entry $HOME/bin
 __append-path-entry $SOURCE_DIR/local-only/bin
-
-# Remove duplicate path entries
-# Taken from: http://unix.stackexchange.com/a/40973/10613
-set -f
-IFS=:
-old_PATH=$PATH:
-PATH=
-while [ -n "$old_PATH" ]; do
-  x=${old_PATH%%:*}
-  case $PATH: in
-    *:${x}:*) :;;
-    *) PATH=$PATH:$x;;
-  esac
-  old_PATH=${old_PATH#*:}
-done
-PATH=${PATH#:}
-set +f
-unset IFS old_PATH x
 
 export PATH
