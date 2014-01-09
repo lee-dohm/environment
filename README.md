@@ -4,36 +4,31 @@ A collection of Lee's environment configuration, scripts and other goodies.
 
 ## Installation
 
-### Install Ruby Environment
-
-1. Install [RVM][rvm]
-1. Install [Ruby][ruby] (v1.9+)
-1. Install [Rake][rake]
+Git is a requirement before any of this can be installed. I really should figure out a cool way to install the environment without needing git to already be on the system.
 
 ### Install Environment
 
-1. Check out the repository
-1. Open a shell window
-1. Change to the directory where the repository is installed
-1. Execute the command: `rake install`
-1. Execute the command: `bundle install`
+1. Open a terminal window
+1. Check out the repository: `git clone git@github.com:lee-dohm/environment.git ~/Source/environment`
+1. Change to the environment directory: `cd ~/Source/environment`
+1. Execute the install command: `./install.sh`
+1. Change the shell, if necessary: `chsh -s /bin/zsh`
+1. Reopen the terminal window
 
-### Actions
+### Install Homebrew
 
-The installation script performs the following actions:
+See the [official Homebrew installation instructions](http://brew.sh/).
 
-1. If it is being executed on OS X, installs [Homebrew][brew]
-1. Installs the [fish shell][fish]
-1. Sets the default shell to fish
-1. Adds a line to `~/.config/fish/config.fish` to source `Profile/config.fish`
-1. Installs Git
-1. Configures Git to include the configuration file at `config/git`
-1. If it is being executed on OS X, configures Git to use `config/gitignore_osx` as its global ignores file
+### Install Ruby
 
-## Notes
-
-* [Homebrew][brew] works best if the path `/usr/local/bin` is on the `PATH` before `/usr/bin`. If running a shell other than fish, follow [these instructions][osx-path] to update the defaults when installing a new OS X machine. The fish environment includes a dynamic fix.
-* For more information on how the fish environment is configured: [fish Environment Notes][fishnotes]
+1. Open a terminal window
+1. Change to the environment directory: `cd $SCRIPT_DIR`
+1. Install rbenv: `brew install rbenv`
+1. Install ruby-install: `brew install ruby-install`
+1. Install ruby: `rbenv install 2.0.0-p353`
+1. Set installed ruby as default: `rbenv global 2.0.0-p353`
+1. Install bundler: `gem install bundler`
+1. Install standard gems: `bundle install`
 
 ### git-process
 
@@ -59,7 +54,7 @@ $ git to-master
 
 ## Copyright
 
-`lib/trollop.rb` is Copyright &copy; 2008-2012 William Morgan. Trollop is distributed under the same terms as Ruby. For more information see [the Trollop homepage][trollop].
+`lib/trollop.rb` is Copyright &copy; 2008-2012, 2014 William Morgan. Trollop is distributed under the same terms as Ruby. For more information see [the Trollop homepage][trollop].
 
 All else is Copyright &copy; 2011-2013 [Lee Dohm][lee], [Lifted Studios][lifted].  See [LICENSE](LICENSE.md) for details.
 
