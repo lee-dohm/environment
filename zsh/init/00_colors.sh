@@ -10,7 +10,7 @@ done
 eval RESET='%{$reset_color%}'
 
 # Set colorized terminal
-if [[ $OS == 'Darwin' ]] then
+if [[ $OS == 'Darwin' ]]; then
     export CLICOLOR=1
     export LSCOLORS='Exfxcxdxbxegedabagacad'
 else
