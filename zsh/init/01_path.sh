@@ -1,6 +1,9 @@
+# Appends the first argument to the `PATH` if it exists and is a directory.
 append-path-entry () {
-    if [ -d $1 ]; then
-        PATH="$PATH:$1"
+    dir=$1
+
+    if [ -d $dir ]; then
+        PATH="$PATH:$dir"
     fi
 }
 
