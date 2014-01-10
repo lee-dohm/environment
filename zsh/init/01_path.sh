@@ -71,7 +71,7 @@ __remove-path-duplicates () {
 # Checks to ensure that `/usr/local/bin` is before `/usr/bin` in the `PATH`. If not, it puts it in
 # front.
 __local-fixup () {
-    if [[ `__get-index $PATH /usr/local/bin` -gt `__get-index $PATH /usr/bin` ]]; then
+    if [ `__get-index $PATH /usr/local/bin` -gt `__get-index $PATH /usr/bin` ]; then
         PATH="/usr/local/bin:$PATH"
     fi
 }

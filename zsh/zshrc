@@ -1,9 +1,9 @@
-#!/bin/zsh
+#!/bin/sh
 
 # Variables global to the init scripts
 OS=$(uname -s)
 
-if [[ $OS == 'Darwin' ]]; then
+if [ $OS = 'Darwin' ]; then
     SCRIPT_DIR=$(dirname $(dirname $(readlink $HOME/.zshrc)))
 else
     SCRIPT_DIR=$HOME/Source/environment
