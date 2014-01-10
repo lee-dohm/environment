@@ -79,6 +79,5 @@ __local-fixup () {
 __local-fixup
 
 __append-path-entry $HOME/bin
-__append-path-entry $SOURCE_DIR/local-only/bin
 
 export PATH
