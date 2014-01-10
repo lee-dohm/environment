@@ -7,7 +7,10 @@ alias be='bundle exec'
 alias bi='bundle install'
 alias bre='bundle exec'
 
-if [[ $OS == 'Darwin' ]] then
+alias df='df -h'
+alias du='du -h'
+
+if [ $OS = 'Darwin' ]; then
     pman () {
         man -t "${1}" | open -f -a /Applications/Preview.app
     }
