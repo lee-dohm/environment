@@ -1,4 +1,4 @@
-if [[ $OS = "Darwin" ]]; then
+if [ $OS = "Darwin" ]; then
     android_path="$HOME/android-sdk-macosx"
 fi
 
