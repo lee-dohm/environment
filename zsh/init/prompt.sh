@@ -1,9 +1,17 @@
 autoload -U promptinit
 promptinit
 
+parse_git_branch () {
+    git branch --no-color 2>/dev/null |
+        sed -e '/^[^*]/d' \
+            -e "s/(detached from //" \
+            -e "s/)//" \
+            -e "s/* \(.*\)/${BOLD_WHITE}(${YELLOW}\1${BOLD_WHITE}) ${RESET}/"
+}
+
 # Set the prompt that I like
 precmd () {
-    branch=`git branch --no-color 2>/dev/null | grep \* | sed "s/^\* \(.*\)$/(${YELLOW}\1${BOLD_WHITE}) /"`
+    branch=`parse_git_branch`
 
     exit="%(?..${RED}[%?]${RESET} )"
 
@@ -11,7 +19,7 @@ precmd () {
 
     host="${YELLOW}%m"
     user="${GREEN}%n"
-    loc="${BOLD_WHITE}[$user${BOLD_WHITE}@$host${BOLD_WHITE}] "
+    loc="${BOLD_WHITE}[$user${BOLD_WHITE}@$host${BOLD_WHITE}] ${RESET}"
 
     PS1="$loc$branch$exit$sep"
 }
