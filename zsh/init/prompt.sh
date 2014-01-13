@@ -1,7 +1,7 @@
 autoload -U promptinit
 promptinit
 
-parse_git_branch () {
+prompt_git_branch () {
     git branch --no-color 2>/dev/null |
         sed -e '/^[^*]/d' \
             -e "s/(detached from //" \
@@ -11,7 +11,7 @@ parse_git_branch () {
 
 # Set the prompt that I like
 precmd () {
-    branch=`parse_git_branch`
+    branch=`prompt_git_branch`
 
     exit="%(?..${RED}[%?]${RESET} )"
 
