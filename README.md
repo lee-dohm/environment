@@ -30,9 +30,40 @@ See the [official Homebrew installation instructions][brew].
 1. Install bundler: `gem install bundler`
 1. Install standard gems: `bundle install`
 
+## Git Support
+
+I've spent a lot of time looking around at how other people use [Git][git] from the command line. This has turned into a number of tweaks and (hopeful) optimizations to how my scripts work. One thing I wanted to make note of in particular is the relation between Git commands, Git aliases, and shell aliases for Git commands.
+
+There are a few categories to the changes I have made in my Git environment: simplifying the common case, optimizing the execution of Git commands, and creating new commands.
+
+### Simplifying the Common Case
+
+This is typically done through a Git alias in the `gitconfig` file. For example, I almost always want to see the `git status` in the short form including the branch information. So I have the following alias:
+
+```text
+[alias]
+    st = status --short --branch
+```
+
+This allows me to simply type `git st` to get the status display that I normally choose. If I want to use the standard status display, then I can always type the full command, `git status`.
+
+### Optimizing the Execution of Git Commands
+
+The fewer characters I have to type, the faster I can execute the commands. Also, the most common commands should be the simplest to type. For this purpose, I use shell aliases because then I don't even have to type the space between `git` and the rest of the command. For example:
+
+```bash
+alias gg='git l'
+```
+
+This aliases `gg` to my standard `git log` view, since this is probably the second most common git command I use (second only to `git st`).
+
+### Creating new Commands
+
+This is either done through Git aliases for simple commands like `git aliases`, which lists all of the Git aliases currently defined, or through shell scripts like the `git update-fork` command.
+
 ### git-process
 
-I've added the [git-process][process] gem to the standard environment. This enables a simpler way to do a proper branching work flow in Git. Here is the standard single-user work flow:
+The [git-process][process] gem is part of the standard environment. This enables a simpler way to do a proper branching work flow in Git. Here is the standard single-user work flow:
 
 * Start a new branch
 
@@ -58,7 +89,8 @@ $ git to-master
 
 All else is Copyright &copy; 2011-2014 [Lee Dohm][lee], [Lifted Studios][lifted].  See [LICENSE](LICENSE.md) for details.
 
-[brew]: http://brew.sh/
+[brew]: http://brew.sh
+[git]: http://gitscm.org
 [lee]: https://github.com/lee-dohm
 [lifted]: https://github.com/lifted-studios
 [process]: https://github.com/jdigger/git-process

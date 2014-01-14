@@ -40,6 +40,7 @@
     ci = commit
     co = checkout
     dag = log --graph --decorate --pretty=oneline --abbrev-commit --all
+    l = log --graph --decorate --pretty=oneline --abbrev-commit --all
     st = status --branch --short
 
 [man "gem-man"]
