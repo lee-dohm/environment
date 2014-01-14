@@ -1,3 +1,6 @@
+# Add custom zsh autocompletion function directory
+fpath=($SCRIPT_DIR/zsh/completion $fpath)
+
 autoload -U compinit
 compinit
 
