@@ -40,7 +40,7 @@ There are a few categories to the changes I have made in my Git environment: sim
 
 This is typically done through a Git alias in the `gitconfig` file. For example, I almost always want to see the `git status` in the short form including the branch information. So I have the following alias:
 
-```text
+```ini
 [alias]
     st = status --short --branch
 ```

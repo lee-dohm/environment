@@ -18,8 +18,3 @@ g () {
         git "$@"
     fi
 }
-
-# Writes the name of the current branch to `STDOUT`.
-git-current-branch () {
-    git branch --no-color | sed -e '/^[^*]/d' -e 's/* \(.*\)/\1/'
-}
