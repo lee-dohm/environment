@@ -23,10 +23,8 @@ link_home () {
 
 root=`dirname $(abspath $0)`
 
-[[ ! -e $HOME/.bundle ]] && mkdir $HOME/.bundle
-
 link_home $root/bin              bin
-link_home $root/config/bundler   .bundle/config
+link_home $root/config/bundler   .bundle
 link_home $root/config/gemrc     .gemrc
 link_home $root/config/gitconfig .gitconfig
 link_home $root/config/gitignore .gitignore
