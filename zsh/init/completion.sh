@@ -12,3 +12,7 @@ zstyle -e ':completion:*:approximate:*' \
 
 # Ignore completion functions for commands I don't have
 zstyle ':completion:*:functions' ignored-patterns '_*'
+
+## case-insensitive (all),partial-word and then substring completion
+zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}' \
+       'r:|[._-]=* r:|=*' 'l:|=* r:|=*'
