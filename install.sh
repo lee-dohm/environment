@@ -7,10 +7,10 @@ abspath() {
 
 # Creates a symbolic link in the user's home directory.
 link_home () {
-    real=$1
-    link_name=$2
-    link_path=$HOME/$link_name
-    backup_dir=$HOME/dotfiles-backup
+    local real=$1
+    local link_name=$2
+    local link_path=$HOME/$link_name
+    local backup_dir=$HOME/dotfiles-backup
 
     if [[ -e $link_path ]]; then
         [[ ! -d $backup_dir ]] && mkdir $backup_dir
