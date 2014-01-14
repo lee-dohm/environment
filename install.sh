@@ -1,24 +1,27 @@
 #!/bin/sh
 
-if [[ "$0" != "./install.sh" ]]; then
-    echo 'FAIL: This script must be run directly from the environment project root.'
-    exit 1
-fi
+# Gets the absolute path of the first parameter.
+abspath() {
+    cd -P -- "$(dirname -- "$1")" && printf '%s\n' "$(pwd -P)/$(basename -- "$1")"
+}
 
+# Creates a symbolic link in the user's home directory.
 link_home () {
     real=$1
     link_name=$2
     link_path=$HOME/$link_name
+    backup_dir=$HOME/dotfiles-backup
 
-    if [[ ! -e $link_path ]]; then
-        ln -s $real $link_path
-    else
-        echo "WARN: Skipping linking $link_name because $link_path already exists"
+    if [[ -e $link_path ]]; then
+        [[ ! -d $backup_dir ]] && mkdir $backup_dir
+        echo "WARN: Backing up $link_path to $backup_dir" >&2
+        mv $link_path $backup_dir/$link_name
     fi
+
+    ln -s $real $link_path
 }
 
-os=$(uname -s)
-root=$PWD
+root=`dirname $(abspath $0)`
 
 link_home $root/bin              bin
 link_home $root/config/gemrc     .gemrc
