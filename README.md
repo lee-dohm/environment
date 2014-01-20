@@ -38,14 +38,14 @@ There are a few categories to the changes I have made in my Git environment: sim
 
 ### Simplifying the Common Case
 
-This is typically done through a Git alias in the `gitconfig` file. For example, I almost always want to see the `git status` in the short form including the branch information. So I have the following alias:
+This is typically done through a Git alias in the `gitconfig` file. For example, I almost always want to see my fancy graph one-line log format instead of the standard log format. So I have the following alias:
 
 ```ini
 [alias]
-    st = status --short --branch
+    l = log --graph --decorate --pretty=oneline --abbrev-commit --all
 ```
 
-This allows me to simply type `git st` to get the status display that I normally choose. If I want to use the standard status display, then I can always type the full command, `git status`.
+This allows me to simply type `git l` to get the log display that I normally choose. If I want to use the standard log display, then I can always type the full command, `git log`.
 
 ### Optimizing the Execution of Git Commands
 
