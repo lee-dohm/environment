@@ -1,0 +1,8 @@
+#!/bin/sh
+
+if [ -z "$LT_HOME" ]; then
+    echo "Cannot find LightTable home directory" >&2
+    exit 1
+fi
+
+exec $LT_HOME/light $@
