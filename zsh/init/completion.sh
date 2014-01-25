@@ -16,6 +16,9 @@ zstyle -e ':completion:*:approximate:*' \
 # Ignore completion functions for commands I don't have
 zstyle ':completion:*:functions' ignored-patterns '_*'
 
-## case-insensitive (all),partial-word and then substring completion
+# case-insensitive (all),partial-word and then substring completion
 zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}' \
        'r:|[._-]=* r:|=*' 'l:|=* r:|=*'
+
+# Pointer to base Git completion script
+zstyle ':completion:*:*:git:*' script $SCRIPT_DIR/zsh/completion/git-completion.bash
