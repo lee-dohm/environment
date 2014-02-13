@@ -10,6 +10,8 @@ alias bre='bundle exec'
 alias df='df -h'
 alias du='du -h'
 
+alias f='find . -name'
+
 if [ $OS = 'Darwin' ]; then
     pman () {
         man -t "${1}" | open -f -a /Applications/Preview.app
