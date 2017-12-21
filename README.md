@@ -1,6 +1,6 @@
 # Lee's Environment
 
-A collection of Lee's environment configuration, scripts and other goodies.
+:rotating_light: This project is obsolete and has been supplanted by [lee-dohm/dotfiles](https://github.com/lee-dohm/dotfiles). :rotating_light:
 
 ## Installation
 
